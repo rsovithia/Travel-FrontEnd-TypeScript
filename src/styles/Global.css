@@ -1,0 +1,45 @@
+/* background color */
+.bg-blue {
+  background: white;
+}
+
+.bg-blue-light {
+  background: rgba(1, 104, 250, 0.15);
+}
+
+.bg-light-grey {
+  background: white;
+}
+
+/* text-color */
+.text-blue {
+  color: white;
+  padding-right: 100px;
+  font-weight: bold;
+}
+
+/* hover color */
+button:hover.hover-blue {
+  background: #df6e1a;
+}
+
+button:hover.hover-blue-light {
+  color: #df6e1a;
+}
+
+/* rounded */
+.rounded-circle {
+  border: #ffffff00 1px solid;
+  border-radius: 50px;
+}
+
+/* text color */
+h1,
+h2,
+h3,
+h4
+h5,
+p {
+  color: black;
+  margin: 0rem 0rem 0.25rem 0rem;
+}

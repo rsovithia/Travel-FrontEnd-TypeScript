@@ -1,0 +1,25 @@
+.Navbar {
+  display: flex;
+  background: linear-gradient(260deg, #eda821, #eda821);
+  align-items: center;
+  padding: 0 30px;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.25);
+  height: 80px;
+  margin: 0;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 94%;
+  border-radius: 10px;
+}
+/* Navbar.css */
+.body-shift {
+  overflow-x: hidden;
+}
+
+@media (max-width: 700px) {
+  .body-shift {
+    overflow: hidden;
+  }
+}
