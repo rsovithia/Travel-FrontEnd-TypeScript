@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import config from "../../../Api/config";
 
 export default function AdminTable() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -26,6 +27,11 @@ export default function AdminTable() {
     email: "",
     password: "",
   });
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
@@ -47,6 +53,28 @@ export default function AdminTable() {
     // Add logic to handle adding user data
     handleCloseDialog();
   };
+
+  const getData = async () => {
+    try {
+      const response = await fetch(`${config.apiUrl}/admin/user/all`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const jsonData = await response.json();
+        setData(jsonData.data);
+      } else {
+        console.log("Failed to fetch data:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  
 
   return (
     <>
@@ -76,19 +104,21 @@ export default function AdminTable() {
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell> </TableCell>
-                <TableCell> </TableCell>
-                <TableCell align="center">
-                  {/* Add edit and delete buttons here */}
-                  <Button sx={{ color: "black" }}>
-                    <EditIcon sx={{ color: "black" }} />
-                  </Button>
-                  <Button color="error">
-                    <DeleteIcon color="error" />
-                  </Button>
-                </TableCell>
-              </TableRow>
+              {data.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.id}</TableCell>
+                  <TableCell>{row.name}</TableCell>
+                  <TableCell>{row.email}</TableCell>
+                  <TableCell align="center">
+                    <Button sx={{ color: "black" }}>
+                      <EditIcon sx={{ color: "black" }} />
+                    </Button>
+                    <Button color="error">
+                      <DeleteIcon color="error" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
