@@ -19,21 +19,6 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
-const mockUserData = [
-  {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-    password: "password123",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com",
-    password: "password456",
-  },
-];
-
 export default function AdminTable() {
   const [openDialog, setOpenDialog] = useState(false);
   const [userData, setUserData] = useState({
@@ -50,7 +35,7 @@ export default function AdminTable() {
     setOpenDialog(false);
   };
 
-  const handleChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleChange = (e: { target: { name: any; value: any } }) => {
     const { name, value } = e.target;
     setUserData((prevData) => ({
       ...prevData,
@@ -91,22 +76,19 @@ export default function AdminTable() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {mockUserData.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.id}</TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell align="center">
-                    {/* Add edit and delete buttons here */}
-                    <Button sx={{ color: "black" }}>
-                      <EditIcon sx={{ color: "black" }} />
-                    </Button>
-                    <Button color="error">
-                      <DeleteIcon color="error" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              <TableRow>
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
+                <TableCell align="center">
+                  {/* Add edit and delete buttons here */}
+                  <Button sx={{ color: "black" }}>
+                    <EditIcon sx={{ color: "black" }} />
+                  </Button>
+                  <Button color="error">
+                    <DeleteIcon color="error" />
+                  </Button>
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </TableContainer>
