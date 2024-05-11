@@ -25,12 +25,13 @@ export default function AdminTable() {
   const [userData, setUserData] = useState({
     name: "",
     email: "",
+    phoneNumber: "",
     password: "",
   });
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    getData();
+    getDataUser();
   }, []);
 
   const handleOpenDialog = () => {
@@ -39,9 +40,15 @@ export default function AdminTable() {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
+    setUserData({
+      name: "",
+      email: "",
+      phoneNumber: "",
+      password: "",
+    });
   };
 
-  const handleChange = (e: { target: { name: any; value: any } }) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setUserData((prevData) => ({
       ...prevData,
@@ -49,12 +56,39 @@ export default function AdminTable() {
     }));
   };
 
-  const handleAddUser = () => {
-    // Add logic to handle adding user data
-    handleCloseDialog();
+  const handleAddUser = async () => {
+    if (
+      !userData.name ||
+      !userData.email ||
+      !userData.phoneNumber ||
+      !userData.password
+    ) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${config.apiUrl}/admin/user/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.ok) {
+        getDataUser();
+        handleCloseDialog();
+      } else {
+        console.log("Failed to add user:", response.status);
+      }
+    } catch (error) {
+      console.error("Error adding user:", error);
+    }
   };
 
-  const getData = async () => {
+  const getDataUser = async () => {
     try {
       const response = await fetch(`${config.apiUrl}/admin/user/all`, {
         method: "GET",
@@ -74,7 +108,10 @@ export default function AdminTable() {
     }
   };
 
-  
+  const handleEditUser = (user) => {
+    setUserData(user);
+    handleOpenDialog();
+  };
 
   return (
     <>
@@ -100,6 +137,7 @@ export default function AdminTable() {
                 <TableCell>ID</TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Email</TableCell>
+                <TableCell>Phone Number</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -109,8 +147,12 @@ export default function AdminTable() {
                   <TableCell>{row.id}</TableCell>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.email}</TableCell>
+                  <TableCell>{row.phoneNumber}</TableCell>
                   <TableCell align="center">
-                    <Button sx={{ color: "black" }}>
+                    <Button
+                      sx={{ color: "black" }}
+                      onClick={() => handleEditUser(row)}
+                    >
                       <EditIcon sx={{ color: "black" }} />
                     </Button>
                     <Button color="error">
@@ -146,6 +188,16 @@ export default function AdminTable() {
               fullWidth
               name="email"
               value={userData.email}
+              onChange={handleChange}
+            />
+            <TextField
+              margin="dense"
+              id="phoneNumber"
+              label="Phone Number"
+              type="text"
+              fullWidth
+              name="phoneNumber"
+              value={userData.phoneNumber}
               onChange={handleChange}
             />
             <TextField

@@ -7,22 +7,72 @@ import {
   CardActionArea,
   CardMedia,
   Grid,
+  Button,
+  Container,
 } from "@mui/material";
+
+import Image from "./../../assets/image16.svg";
 
 function DestinationDetails() {
   // Mock data for destination details
-  const destination = {
-    name: "Beach Resort Paradise",
-    location: "Tropical Island",
-    description:
-      "Escape to our luxurious beach resort paradise located on a beautiful  .",
-  };
 
   return (
     <>
       <Box>
-        <Box sx={{ padding: "60px" }}></Box>
-        <Paper
+        <Box
+          sx={{
+            backgroundColor: "#ddddd",
+            padding: "0px 0",
+            height: "400px",
+            width: "100vw",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          {/* Dark overlay on the left */}
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: "50vw", // Adjust the width according to your design
+              backgroundColor: "rgba(0, 0, 0, 0.5)", // Adjust opacity as needed
+            }}
+          />
+
+          {/* Dark overlay on the right */}
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: "50vw", // Adjust the width according to your design
+              backgroundColor: "rgba(0, 0, 0, 0.5)", // Adjust opacity as needed
+            }}
+          />
+
+          <Container
+            maxWidth="md"
+            sx={{
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative", // Add this to make sure the image stays on top of overlays
+              zIndex: 1, // Add this to ensure the image is on top of overlays
+            }}
+          >
+            <img
+              src={Image}
+              alt={""}
+              style={{ width: "100%", height: "auto" }}
+            />
+          </Container>
+        </Box>
+
+        {/* <Paper
           sx={{
             display: "flex",
             justifyContent: "left",
@@ -52,8 +102,8 @@ function DestinationDetails() {
               <strong>Description:</strong> {destination.description}
             </Typography>
           </Box>
-        </Paper>
-        <Paper
+        </Paper> */}
+        {/* <Paper
           sx={{ display: "flex", justifyContent: "center", padding: "0 200px" }}
         >
           <Box sx={{ marginBottom: "20px" }}>
@@ -83,23 +133,30 @@ function DestinationDetails() {
               training data cutoff of 2021.
             </Typography>
           </Box>
-        </Paper>
+        </Paper> */}
       </Box>
-
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center", // Changed from alignContent to alignItems
+          alignItems: "start",
         }}
       >
-        <Box sx={{ width: "50%", padding: "100px", height: "50%" }}>
-          <Box sx={{ bgcolor: "red", width: "87vh", height: "40vh" }}>
-            image
-          </Box>
+        <Box sx={{ width: "60%", padding: "100px", height: "50%" }}>
+          <Typography variant="h3" sx={{ textAlign: "start", color: "red" }}>
+            Your Big Title Here
+          </Typography>
         </Box>
-        <Box sx={{ width: "50%", padding: "100px", height: "100%" }}>
-          <Box sx={{ marginBottom: "20px" }}>
+        <Box
+          sx={{
+            width: "50%",
+            padding: "50px",
+            height: "100%",
+            margin: "20px  0px 0 0",
+            bgcolor: "lightgray",
+          }}
+        >
+          <Box sx={{ marginBottom: "20px", padding: "20px" }}>
             <Typography variant="h5" gutterBottom>
               Learn more about AI Text Generator:
             </Typography>
@@ -118,56 +175,10 @@ function DestinationDetails() {
               account (no subscription required!) to gain access to this
               feature.
             </Typography>
-            <Typography variant="body1">
-              Ideas for Chatting with the AI:
-              <ul>
-                <li>
-                  Can you describe the concept of relativity to me in layman's
-                  terms?
-                </li>
-                <li>
-                  What are some unique and entertaining ways to celebrate a
-                  friend's anniversary?
-                </li>
-                <li>Could you walk me through how to use loops in Python?</li>
-              </ul>
-            </Typography>
-            <Typography variant="body1">
-              Strengths:
-              <ul>
-                <li>
-                  Can recall information from previous conversations to provide
-                  personalized responses.
-                </li>
-                <li>
-                  Allows users to correct any misunderstandings or errors in the
-                  previous interaction.
-                </li>
-                <li>
-                  Is programmed to refuse inappropriate or harmful requests.
-                </li>
-              </ul>
-            </Typography>
-            <Typography variant="body1">
-              Weaknesses:
-              <ul>
-                <li>
-                  Can occasionally provide incorrect information due to
-                  limitations in its training data or understanding.
-                </li>
-                <li>
-                  May inadvertently provide instructions or suggestions that are
-                  harmful or biased without realizing it.
-                </li>
-                <li>
-                  Limited knowledge of current events and developments beyond
-                  the training data cutoff of 2021.
-                </li>
-              </ul>
-            </Typography>
           </Box>
         </Box>
       </Box>
+
       <Box
         sx={{
           display: "flex",
@@ -251,6 +262,31 @@ function DestinationDetails() {
         </Box>
       </Box>
       <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center", // Changed from alignContent to alignItems
+        }}
+      >
+        <Box
+          sx={{
+            width: "100%",
+            padding: "100px",
+            gap: "10px",
+            height: "100%",
+            display: "flex",
+            justifyContent: "space-between",  
+            alignItems: "center",  
+  
+          }}
+        >
+          {/* Each child Box with red background, fixed width, and height */}
+          <Box sx={{ bgcolor: "red", width: "50vh", height: "40vh" }}></Box>
+          <Box sx={{ bgcolor: "red", width: "50vh", height: "40vh" }}></Box>
+          <Box sx={{ bgcolor: "red", width: "50vh", height: "40vh" }}></Box>
+        </Box>
+      </Box>
+      {/* <Box
         sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
       >
         <Grid container spacing={4} justifyContent="center">
@@ -342,9 +378,8 @@ function DestinationDetails() {
               </CardActionArea>
             </Card>
           </Grid>
-          
         </Grid>
-      </Box>
+      </Box> */}
     </>
   );
 }

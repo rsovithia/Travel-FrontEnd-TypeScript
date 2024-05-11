@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Container,
   Typography,
@@ -7,14 +8,12 @@ import {
   Grid,
   Button,
 } from "@mui/material";
-// import CoverSection from "../../components/CoverSection/CoverSection";
-// import DestinationDetail from "../DestinationDetails/DestinationDetails";
-
+import { Link } from "react-router-dom"; // Import Link from React Router
 
 const provinces = [
   {
     name: "Phnom Penh",
-    description: "The capital city of Cambodia.",
+    description: "The capital city of Cambodia. And have alot place ",
     image: "phnom-penh.jpg",
   },
   {
@@ -30,19 +29,20 @@ const provinces = [
   {
     name: "Sihanoukville",
     description: "Known for its beaches and nightlife.",
-    image: "sihanoukville.jpg",
+    image:
+      "https://img.freepik.com/free-vector/cambodia-cultural-travel-map-flat-poster_1284-17113.jpg",
   },
   // Add more provinces as needed
 ];
 
-
 const Destinations = () => {
+  // Find the maximum height of the card content
+
   return (
     <>
-      {/* <CoverSection /> */}
       <Container maxWidth="lg">
         <Typography
-          sx={{ padding: "20px" }}
+          sx={{ paddingTop: "120px" }}
           variant="h2"
           align="center"
           gutterBottom
@@ -52,16 +52,18 @@ const Destinations = () => {
         <Grid container spacing={3}>
           {provinces.map((province, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
-              {" "}
-              {/* Adjusted md to display 4 cards per line */}
-              <Card elevation={3}>
+              <Card elevation={2}>
                 <CardMedia
                   component="img"
-                  height="200"
-                  image={`/images/${province.image}`} // Assuming images are in a folder named "images"
+                  sx={{ height: 200 }} // Maintain 16:9 aspect ratio
+                  image={province.image} // Use province image
                   alt={province.name}
                 />
-                <CardContent>
+                <CardContent
+                  sx={{
+                    overflow: "auto",
+                  }}
+                >
                   <Typography variant="h5" gutterBottom>
                     {province.name}
                   </Typography>
@@ -71,7 +73,8 @@ const Destinations = () => {
                   <Button
                     variant="outlined"
                     color="primary"
-                    href={`#${province.name.replace(/\s+/g, "-")}`}
+                    component={Link} // Use Link component from React Router
+                    to={`/DestinationDetails`} // Navigate to /DestinationDetails
                   >
                     Learn More
                   </Button>
@@ -80,7 +83,6 @@ const Destinations = () => {
             </Grid>
           ))}
         </Grid>
-        {/* Additional sections for each province */}
       </Container>
     </>
   );
