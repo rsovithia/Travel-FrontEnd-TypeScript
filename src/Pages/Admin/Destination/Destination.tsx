@@ -48,6 +48,8 @@ export default function AdminTable() {
     image: null,
   });
 
+  const fileUrl = config.fileUrl ;
+
   useEffect(() => {
     getData();
   }, []);
@@ -140,7 +142,7 @@ export default function AdminTable() {
                   <TableCell>{row.name}</TableCell>
                   <TableCell>
                     <img
-                      src={row.image1}
+                      src={fileUrl+row.image1}
                       alt="Destination"
                       style={{ width: "100px" }}
                     />
