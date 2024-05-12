@@ -82,16 +82,17 @@ export default function Navbar() {
                   Destinations
                 </Button>
               </Grid>
-              {/* <Grid item>
-                <Button color="inherit" component={Link} to="/packages">
-                  Packages
+              <Grid item>
+                <Button color="inherit" component={Link} to="/#">
+                  Recommandation
                 </Button>
-              </Grid> */}
-              {/* <Grid item>
-                <Button color="inherit" component={Link} to="/about">
-                  About Us
+              </Grid>
+              <Grid item>
+                <Button color="inherit" component={Link} to="/login">
+                  Login
                 </Button>
-              </Grid> */}
+              </Grid>
+
               {/* <Grid item>
                 <Button color="inherit" component={Link} to="/contact">
                   Contact

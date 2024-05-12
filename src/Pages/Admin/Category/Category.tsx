@@ -104,6 +104,9 @@ export default function AdminTable() {
 
   const removeData = async (id: number) => {
     try {
+
+      const confirmed = window.confirm("Are you sure you want to delete this category?");
+      if (!confirmed) return;
       const response = await fetch(`${config.apiUrl}/admin/category/${id}`, {
         method: "DELETE",
         headers: {
@@ -208,9 +211,11 @@ export default function AdminTable() {
           <TextField
             value={newDestinationName}
             onChange={(e) => setNewDestinationName(e.target.value)}
-            label="New Destination Name"
+            label="New Category Name"
           />
-          <Button onClick={handleCreate}>Create </Button>
+          <Button 
+         
+          onClick={handleCreate}   color="primary">Create</Button>
         </Box>
       </Box>
       <Dialog open={openDialog} onClose={handleCloseDialog}>

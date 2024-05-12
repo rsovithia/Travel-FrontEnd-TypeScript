@@ -1,36 +1,14 @@
 import React, { useState, useEffect } from "react"; // Importing useState and useEffect
 import { Typography, Paper, Box, Container } from "@mui/material";
 import config from "../../Api/config";
+import { useLocation } from 'react-router-dom';
 
 function DestinationDetails() {
-  const [data, setData] = useState([]); // State variable to store fetched data
+  const location = useLocation();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`${config.apiUrl}/admin/destination/all`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${config.accessToken}`,
-          },
-        });
+  const objectData = location.state.result.data;
 
-        if (response.ok) {
-          const jsonData = await response.json();
-          setData(jsonData.data);
-        } else {
-          console.log("Failed to fetch data:", response.status);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData(); // Call the fetchData function when the component mounts
-  }, []); // Empty dependency array ensures this effect runs only once after the initial render
-
-  console.log(data);
-
+  const fileUrl = config.fileUrl;
   return (
     <>
       <Box>
@@ -80,8 +58,8 @@ function DestinationDetails() {
             }}
           >
             <img
-              src={Image}
-              alt={""}
+              src={fileUrl+objectData.image1}
+              alt={"image1"}
               style={{ width: "100%", height: "auto" }}
             />
           </Container>
@@ -96,7 +74,9 @@ function DestinationDetails() {
       >
         <Box sx={{ width: "60%", padding: "100px", height: "50%" }}>
           <Typography variant="h3" sx={{ textAlign: "start", color: "red" }}>
-            {data.length > 0 ? `Name : ${data[0].name}` : " "}
+          {objectData.name}
+          
+            {/* {data.length > 0 ? `Name : ${data[0].name}` : " "} */}
           </Typography>
         </Box>
       </Box>
@@ -115,12 +95,7 @@ function DestinationDetails() {
               Learn more about AI Text Generator:
             </Typography>
             <Typography variant="body1">
-              What is Genius Mode? It is an enhanced version of AI Chat that
-              provides more knowledge, fewer errors, improved reasoning skills,
-              better verbal fluidity, and an overall superior performance. Due
-              to the larger AI model, Genius Mode is only available via
-              subscription to DeepAI Pro. However, the added benefits often make
-              it a worthwhile investment.
+            {objectData.description}
             </Typography>
             <Typography variant="body1">
               What is Online Mode? It is an add-on that enables AI Chat to

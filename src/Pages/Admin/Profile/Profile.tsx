@@ -1,12 +1,22 @@
 import { Avatar, Typography, Button, Box } from "@mui/material";
-
+import { useLocation } from 'react-router-dom';
 // Mock user data
+
+
+// const location  = useLocation() ;
+
+// const profileData = location.state.response ; 
+
+// console.log("data:"+ profileData)
+
 const mockUser = {
-  name: "John Doe",
+  name: "name",
   email: "johndoe@example.com",
   location: "New York, USA",
   profilePicture: "https://via.placeholder.com/150",
+
 };
+
 
 export default function Profile() {
   return (

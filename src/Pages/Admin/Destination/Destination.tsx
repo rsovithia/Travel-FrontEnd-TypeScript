@@ -8,6 +8,8 @@ import {
   DialogTitle,
   Input,
   Paper,
+  Select,
+  MenuItem,
   Table,
   TableBody,
   TableCell,
@@ -19,6 +21,11 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import PreviewIcon from '@mui/icons-material/Preview';
+import { useNavigate } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
+
+
 import config from "../../../Api/config";
 
 interface Destination {
@@ -26,7 +33,7 @@ interface Destination {
   name: string;
   description: string;
   province_id: number;
-  category_id: number;
+  category_id: string;
   lat: string;
   long: string;
   image1: string | null;
@@ -39,14 +46,15 @@ interface Destination {
 const AdminTable: React.FC = () => {
   const [data, setData] = useState<Destination[]>([]);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [categories, setCategories] = useState([]);
   const [selectedDestinationId, setSelectedDestinationId] = useState<
     number | null
   >(null);
   const [newDestination, setNewDestination] = useState<Destination>({
     name: "",
     description: "",
-    province_id: 0,
-    category_id: 0,
+    province_id:0,
+    category_id: "",
     lat: "",
     long: "",
     image1: "",
@@ -57,9 +65,11 @@ const AdminTable: React.FC = () => {
   });
 
   const fileUrl = config.fileUrl ;
+  const navigate = useNavigate();
 
   useEffect(() => {
     getData();
+     fetchCategories();
   }, []);
 
   const getData = async () => {
@@ -170,6 +180,31 @@ const AdminTable: React.FC = () => {
     }
   };
 
+  const hanlerViewDetails = async (ButtonEditId: number) => {
+    try {
+
+      const response = await fetch(
+        `${config.apiUrl}/admin/destination/${ButtonEditId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${config.accessToken}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const result = await  response.json() ;  
+        navigate('/DestinationDetails', { state: {result } });
+      } else {
+        console.log("Failed to fetch destination:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching destination:", error);
+    }
+  };
+
   const handleGetIdFerDestination = async (ButtonEditId: number) => {
     try {
       const response = await fetch(
@@ -197,6 +232,9 @@ const AdminTable: React.FC = () => {
 
   const handleRemoveDestination = async (deletedId: number) => {
     try {
+      const confirmed = window.confirm("Are you sure you want to delete this destination?");
+      if (!confirmed) return;
+
       const response = await fetch(
         `${config.apiUrl}/admin/destination/${deletedId}`,
         {
@@ -218,6 +256,33 @@ const AdminTable: React.FC = () => {
       console.error("Error deleting destination:", error);
     }
   };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        `${config.apiUrl}/admin/category`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${config.accessToken}`,
+          },
+        }
+      );
+      if (response.ok) {
+        const category = await response.json();
+        const result = category.data ;
+        setCategories(result);
+        console.log(result); 
+
+  
+      } else {
+        console.log("Failed to category:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
 
   return (
     <>
@@ -245,8 +310,8 @@ const AdminTable: React.FC = () => {
                 <TableCell>Name</TableCell>
                 <TableCell>Images</TableCell>
                 <TableCell>Description</TableCell>
-                <TableCell>Province ID</TableCell>
-                <TableCell>Category ID</TableCell>
+                <TableCell>Province</TableCell>
+                <TableCell>Category</TableCell>
                 <TableCell>Location</TableCell>
                 <TableCell>Created At</TableCell>
                 <TableCell>Updated At</TableCell>
@@ -262,30 +327,36 @@ const AdminTable: React.FC = () => {
                     <div style={{ display: "flex", alignItems: "center" }}>
                       {row.image1 && (
                         <img
-                          src={row.image1}
+                          src={fileUrl+row.image1}
                           alt="Destination"
                           style={{ width: "100px", marginRight: "10px" }}
                         />
                       )}
                       {row.image2 && (
                         <img
-                          src={row.image2}
+                          src={fileUrl+row.image2}
                           alt="Destination"
                           style={{ width: "100px", marginRight: "10px" }}
                         />
                       )}
                       {row.image3 && (
                         <img
-                          src={row.image3}
+                          src={fileUrl+row.image3}
                           alt="Destination"
                           style={{ width: "100px", marginRight: "10px" }}
                         />
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>{row.description}</TableCell>
-                  <TableCell>{row.province_id}</TableCell>
-                  <TableCell>{row.category_id}</TableCell>
+                  <TableCell style={{  maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis',whiteSpace: 'nowrap', }} >
+                  {row.description}
+
+                  </TableCell>
+                  <TableCell>
+                  {row.province ? row.province.name : ''}
+                  
+                  </TableCell>
+                  <TableCell>{row.category ? row.category.name : ''}</TableCell>
                   <TableCell>
                     {row.lat}, {row.long}
                   </TableCell>
@@ -297,16 +368,24 @@ const AdminTable: React.FC = () => {
                   </TableCell>
 
                   <TableCell>
+                  <Button
+                      onClick={() => row.id && hanlerViewDetails(row.id)}
+                    >
+                      <PreviewIcon  sx={{ color: "black" }}/>
+                 
+                    </Button>
                     <Button
                       onClick={() => row.id && handleEditDestination(row.id)}
                     >
-                      <EditIcon />
+                      <EditIcon  sx={{ color: "blue" }}/>
+
                     </Button>
 
                     <Button
+
                       onClick={() => row.id && handleRemoveDestination(row.id)}
                     >
-                      <DeleteIcon />
+                      <DeleteIcon  sx={{ color: "red" }}/>
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -334,33 +413,41 @@ const AdminTable: React.FC = () => {
               onChange={handleChange}
             />
             <TextField
-              margin="dense"
-              id="description"
-              name="description"
-              label="Description"
-              type="text"
-              fullWidth
-              value={newDestination.description}
-              onChange={handleChange}
-            />
-            <TextField
+                select
+                margin="dense"
+                id="category_id"
+                name="category_id"   
+                label="Category"
+                fullWidth
+                value={newDestination.category_id.id}
+                onChange={handleChange}
+              >
+                 {categories.map((item) => (
+                 <MenuItem key={item.id} value={item.id} >
+                 {item.name}
+            
+               </MenuItem>
+                ))} 
+              </TextField>
+ 
+           <TextField
               margin="dense"
               id="province_id"
               name="province_id"
-              label="Province ID"
+              label="Province_id"
               type="number"
               fullWidth
               value={newDestination.province_id}
               onChange={handleChange}
-            />
+            /> 
             <TextField
               margin="dense"
-              id="category_id"
-              name="category_id"
-              label="Category ID"
-              type="number"
+              id="description"
+              name="description"
+              label="description"
+              type="text"
               fullWidth
-              value={newDestination.category_id}
+              value={newDestination.description}
               onChange={handleChange}
             />
             <TextField

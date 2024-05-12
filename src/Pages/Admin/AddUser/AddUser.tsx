@@ -25,7 +25,7 @@ export default function AdminTable() {
   const [userData, setUserData] = useState({
     name: "",
     email: "",
-    phoneNumber: "",
+    phone: "",
     password: "",
   });
   const [data, setData] = useState([]);
@@ -43,7 +43,7 @@ export default function AdminTable() {
     setUserData({
       name: "",
       email: "",
-      phoneNumber: "",
+      phone: "",
       password: "",
     });
   };
@@ -60,7 +60,7 @@ export default function AdminTable() {
     if (
       !userData.name ||
       !userData.email ||
-      !userData.phoneNumber ||
+      !userData.phone ||
       !userData.password
     ) {
       alert("Please fill in all fields.");
@@ -147,7 +147,7 @@ export default function AdminTable() {
                   <TableCell>{row.id}</TableCell>
                   <TableCell>{row.name}</TableCell>
                   <TableCell>{row.email}</TableCell>
-                  <TableCell>{row.phoneNumber}</TableCell>
+                  <TableCell>{row.phone}</TableCell>
                   <TableCell align="center">
                     <Button
                       sx={{ color: "black" }}
@@ -197,7 +197,7 @@ export default function AdminTable() {
               type="text"
               fullWidth
               name="phoneNumber"
-              value={userData.phoneNumber}
+              value={userData.phone}
               onChange={handleChange}
             />
             <TextField
