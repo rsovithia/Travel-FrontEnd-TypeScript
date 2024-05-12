@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   Typography,
@@ -11,11 +12,57 @@ import CoverSection from "../../Components/CoverSection/CoverSection";
 import icon from "../../assets/Vector.svg";
 import Footer from "../../Components/Footer/Footer";
 
+// Mock data for cover section
+const coverData = {
+  title: "Travel Website",
+  description:
+    "Travel app is the website that helps you find your destination in Cambodia. Whether you're looking for historical sites, natural wonders, or cultural experiences, our platform provides comprehensive information to make your trip memorable. Explore Cambodia's diverse provinces, from the bustling streets of Phnom Penh to the serene landscapes of Siem Reap. Our platform showcases the beauty and richness of each region, allowing you to plan your itinerary with ease.",
+  imageUrl: "../../assets/Vector.svg",
+};
+
+// Mock data for travel recommendations
+const recommendationsData = [
+  {
+    title: "The temples of Angkor",
+    imageUrl:
+      "https://lp-cms-production.imgix.net/2023-11/GettyImages-1469688108.jpg?auto=format&w=1440&h=810&fit=crop&q=75",
+    description:
+      "The most iconic structures here are Angkor Wat, the world’s largest religious building, and with its enigmatic collection of carved stone faces.",
+  },
+  {
+    title: "Cambodia's Southern Islands ",
+    imageUrl:
+      "https://lp-cms-production.imgix.net/2023-11/GettyImages-517505902.jpg?auto=format&q=75&w=1024",
+    description:
+      "While the sand-sprinkled Cambodian coast may not be quite as famous as the beaches of Thailand or Indonesia.",
+  },
+  {
+    title: "Phnom Penh",
+    imageUrl:
+      "https://lp-cms-production.imgix.net/2022-03/Cambodia%20Phnom%20Penh%20%C2%A9%20Cristian%20Mircea%20Balate%20shutterstock_1982536544.jpg?auto=format&q=75&w=1024",
+    description:
+      "The Cambodian capital is a chaotic yet charming city that has stepped out of the shadows of its war-torn past to embrace a brighter future.",
+  },
+  {
+    title: "Siem Reap",
+    imageUrl:
+      "https://lp-cms-production.imgix.net/2021-11/GettyImages-514556674.jpg?auto=format&q=75&w=1024",
+    description:
+      "Siem Reap’s only reason for existence may be as the gateway to the temples of Angkor, but this charming town has emerged as a world-class destination in its own right,.",
+  },
+  {
+    title: "Battambang",
+    imageUrl:
+      "https://lp-cms-production.imgix.net/2022-03/GettyRF_828302758.jpg?auto=format&q=75&w=1024",
+    description:
+      "Winding along the banks of the Sangker River, Battambang is the traditional face of urban Cambodia and one of the country’s best-preserved colonial-era towns. ",
+  },
+];
+
 export default function Home() {
   return (
     <>
       <CoverSection />
-
       <Box
         sx={{
           display: "flex",
@@ -72,8 +119,13 @@ export default function Home() {
           </Box>
         </Box>
       </Box>
-
-      <Box sx={{ bgcolor: "#EDA821", padding: "20px", marginTop: "40px" }}>
+      <Box
+        sx={{
+          bgcolor: "#EDA821",
+          padding: "20px",
+          marginTop: "40px",
+        }}
+      >
         <Box
           sx={{
             padding: "0px",
@@ -90,7 +142,7 @@ export default function Home() {
             variant="h5"
             component="div"
           >
-            News Update
+            Travel Recommendation
           </Typography>
           <Typography>
             Travel app is the website that helps you to get your destination in
@@ -100,26 +152,35 @@ export default function Home() {
         <Box
           sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
         >
-          <Grid container spacing={2} justifyContent="center">
-            {[1, 2, 3, 4, 5].map((index) => (
+          <Grid container spacing={6} justifyContent="center">
+            {recommendationsData.map((recommendation, index) => (
               <Grid item key={index}>
-                <Card sx={{ maxWidth: "300px" }}>
+                <Card
+                  sx={{ maxWidth: "300px", backgroundColor: "transparent" }}
+                >
                   <CardActionArea>
                     <CardMedia
                       sx={{ width: "100%" }}
                       component="img"
                       height="200"
-                      image={`/static/images/cards/contemplative-reptile-${index}.jpg`}
-                      alt={`green iguana ${index}`}
+                      image={recommendation.imageUrl}
+                      alt={`Recommendation ${index}`}
                     />
-                    <CardContent>
-                      <Typography gutterBottom variant="h5" component="div">
-                        Lizard
+                    <CardContent sx={{ backgroundColor: "transparent" }}>
+                      <Typography
+                        gutterBottom
+                        variant="h5"
+                        component="div"
+                        sx={{ color: "#fff" }}
+                      >
+                        {recommendation.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Lizards are a widespread group of squamate reptiles,
-                        with over 6,000 species, ranging across all continents
-                        except Antarctica
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ color: "#fff" }}
+                      >
+                        {recommendation.description}
                       </Typography>
                     </CardContent>
                   </CardActionArea>
@@ -130,78 +191,6 @@ export default function Home() {
         </Box>
       </Box>
 
-      <Box
-        sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
-      >
-        <Grid container spacing={4} justifyContent="center">
-          <Grid item>
-            <Card sx={{ maxWidth: 345 }}>
-              <CardActionArea>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image="/static/images/cards/contemplative-reptile.jpg"
-                  alt="green iguana"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Lizard
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Lizards are a widespread group of squamate reptiles, with
-                    over 6,000 species, ranging across all continents except
-                    Antarctica
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-          <Grid item>
-            <Card sx={{ maxWidth: 345 }}>
-              <CardActionArea>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image="/static/images/cards/contemplative-reptile.jpg"
-                  alt="green iguana"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Lizard
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Lizards are a widespread group of squamate reptiles, with
-                    over 6,000 species, ranging across all continents except
-                    Antarctica
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-          <Grid item>
-            <Card sx={{ maxWidth: 345 }}>
-              <CardActionArea>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image="/images/contemplative-reptile.jpg"
-                  alt="Green Iguana"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Lizard
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Lizards are a widespread group of squamate reptiles, with
-                    over 6,000 species, ranging across all continents except
-                    Antarctica
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        </Grid>
-      </Box>
       <Footer />
     </>
   );

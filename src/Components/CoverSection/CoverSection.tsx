@@ -27,16 +27,31 @@ const HeroSection: React.FC = () => {
             <Grid item>
               {/* Wrap CardActionArea with Link */}
               <Link to="/destinations" style={{ textDecoration: "none" }}>
-                <Card sx={{ maxWidth: 300, bgcolor: "transparent" }}>
+                <Card
+                  sx={{
+                    maxWidth: 250,
+                    bgcolor: "transparent",
+                    borderRadius: "14px",
+                  }}
+                >
                   <CardActionArea>
                     <CardMedia
                       component="img"
                       height="100%"
-                      image={allIcon}
+                      image={
+                        "https://img.freepik.com/free-vector/cambodia-cultural-travel-map-flat-poster_1284-17113.jpg"
+                      }
                       alt="Green Iguana"
                     />
-                    <CardContent sx={{ bgcolor: "transparent" }}>
-                      <Typography variant="body2" color="text.secondary">
+                    <CardContent
+                      sx={{
+                        bgcolor: "black ",
+
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Typography variant="h5" color="white">
                         All Province
                       </Typography>
                     </CardContent>

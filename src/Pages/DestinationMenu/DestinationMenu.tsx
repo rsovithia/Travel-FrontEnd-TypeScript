@@ -14,24 +14,29 @@ const provinces = [
   {
     name: "Phnom Penh",
     description: "The capital city of Cambodia. And have alot place ",
-    image: "phnom-penh.jpg",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Phnom_Penh_Independence_Monument.jpg/800px-Phnom_Penh_Independence_Monument.jpg",
   },
   {
     name: "Siem Reap",
     description: "Famous for the Angkor Wat temple complex.",
-    image: "siem-reap.jpg",
-  },
-  {
-    name: "Sihanoukville",
-    description: "Known for its beaches and nightlife.",
-    image: "sihanoukville.jpg",
+    image:
+      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/33/fc/e0/siem-reap.jpg?w=1400&h=1400&s=1",
   },
   {
     name: "Sihanoukville",
     description: "Known for its beaches and nightlife.",
     image:
-      "https://img.freepik.com/free-vector/cambodia-cultural-travel-map-flat-poster_1284-17113.jpg",
+      "https://media.istockphoto.com/id/514263434/photo/quiet-empty-paradise-beach-in-koh-rong-near-sihanoukville-cambodia.jpg?s=612x612&w=0&k=20&c=H9n0e9ldKM7XyZqwJ4e7VfTwbOkUne8z2nSWGwEf-9A=",
   },
+  {
+    name: "Koh Rong",
+    description:
+      "An island known for its stunning beaches and vibrant nightlife, located near Sihanoukville.",
+    image:
+      "https://lp-cms-production.imgix.net/2019-06/474416112_super.jpg?fit=crop&q=40&sharp=10&vib=20&auto=format&ixlib=react-8.6.4",
+  },
+
   // Add more provinces as needed
 ];
 

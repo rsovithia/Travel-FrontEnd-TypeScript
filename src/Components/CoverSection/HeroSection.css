@@ -7,9 +7,10 @@ video {
 }
 
 .hero-container {
-  background: url('./../../assets/img-home.jpg') center center/cover no-repeat;
+  background: url("./../../assets/img-home.jpg") center center/cover no-repeat;
   height: 100vh;
   width: 100%;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -28,8 +29,8 @@ video {
   margin-top: 8px;
   color: #fff;
   font-size: 32px;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
-    'Lucida Sans', Arial, sans-serif;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
 }
 
 .hero-btns {
