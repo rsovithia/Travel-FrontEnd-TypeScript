@@ -29,6 +29,7 @@ export default function AdminTable() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [editName, setEditName] = useState<string>("");
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [newDestinationName, setNewDestinationName] = useState<string>("");
 
   useEffect(() => {
     getData();
@@ -51,6 +52,28 @@ export default function AdminTable() {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
+    }
+  };
+
+  const createData = async (newName: string) => {
+    try {
+      const response = await fetch(`${config.apiUrl}/admin/category`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+        body: JSON.stringify({ name: newName }),
+      });
+
+      if (response.ok) {
+        const jsonData = await response.json();
+        setDestinations([...destinations, jsonData.data]);
+      } else {
+        console.log("Failed to create data:", response.status);
+      }
+    } catch (error) {
+      console.error("Error creating data:", error);
     }
   };
 
@@ -115,6 +138,13 @@ export default function AdminTable() {
     }
   };
 
+  const handleCreate = () => {
+    if (newDestinationName.trim() !== "") {
+      createData(newDestinationName);
+      setNewDestinationName("");
+    }
+  };
+
   return (
     <>
       <Box
@@ -174,14 +204,21 @@ export default function AdminTable() {
             </Table>
           </TableContainer>
         </Box>
+        <Box>
+          <TextField
+            value={newDestinationName}
+            onChange={(e) => setNewDestinationName(e.target.value)}
+            label="New Destination Name"
+          />
+          <Button onClick={handleCreate}>Create </Button>
+        </Box>
       </Box>
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Edit Destination Name</DialogTitle>
+        <DialogTitle>Edit Category Name</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
-            label="New Name"
             type="text"
             fullWidth
             value={editName}

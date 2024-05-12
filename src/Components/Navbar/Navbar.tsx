@@ -44,7 +44,8 @@ export default function Navbar() {
       justifyContent="space-between"
       className="Navbar"
       style={{
-        background: "linear-gradient(260deg, #eda821, #eda821)",
+        background:
+          "linear-gradient(260deg, rgba(223, 110, 26, 0.8), rgba(237, 168, 33, 0.8))", 
         boxShadow: "0 5px 15px 0 rgba(0, 0, 0, 0.25)",
         height: "80px",
         display: "flex",
@@ -81,21 +82,21 @@ export default function Navbar() {
                   Destinations
                 </Button>
               </Grid>
-              <Grid item>
+              {/* <Grid item>
                 <Button color="inherit" component={Link} to="/packages">
                   Packages
                 </Button>
-              </Grid>
-              <Grid item>
+              </Grid> */}
+              {/* <Grid item>
                 <Button color="inherit" component={Link} to="/about">
                   About Us
                 </Button>
-              </Grid>
-              <Grid item>
+              </Grid> */}
+              {/* <Grid item>
                 <Button color="inherit" component={Link} to="/contact">
                   Contact
                 </Button>
-              </Grid>
+              </Grid> */}
             </Grid>
           )}
         </Box>
