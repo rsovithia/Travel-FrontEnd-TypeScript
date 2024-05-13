@@ -18,15 +18,21 @@ import {
   TableRow,
   TextField,
   Typography,
+  styled,
+  tableCellClasses,
+  Grid,
+  InputLabel,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import PreviewIcon from '@mui/icons-material/Preview';
+import PreviewIcon from "@mui/icons-material/Preview";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
+import CheckIcon from '@mui/icons-material/Check';
 
 import config from "../../../Api/config";
+import { BorderAll, Margin, Padding } from "@mui/icons-material";
 
 interface Destination {
   id?: number;
@@ -53,7 +59,7 @@ const AdminTable: React.FC = () => {
   const [newDestination, setNewDestination] = useState<Destination>({
     name: "",
     description: "",
-    province_id:0,
+    province_id: 0,
     category_id: "",
     lat: "",
     long: "",
@@ -64,12 +70,12 @@ const AdminTable: React.FC = () => {
     updated_at: "",
   });
 
-  const fileUrl = config.fileUrl ;
+  const fileUrl = config.fileUrl;
   const navigate = useNavigate();
 
   useEffect(() => {
     getData();
-     fetchCategories();
+    fetchCategories();
   }, []);
 
   const getData = async () => {
@@ -94,6 +100,20 @@ const AdminTable: React.FC = () => {
 
   const handleOpenDialog = () => {
     setOpenDialog(true);
+
+    setNewDestination({
+      name: "",
+      description: "",
+      province_id: 0,
+      category_id: "",
+      lat: "",
+      long: "",
+      image1: "",
+      image2: "",
+      image3: "",
+      created_at: "",
+      updated_at: "",
+    });
   };
 
   const handleCloseDialog = () => {
@@ -101,9 +121,10 @@ const AdminTable: React.FC = () => {
     setSelectedDestinationId(null);
   };
 
-  const handleEditDestination = (id: number) => {
+  const handleEditDestination = async (id: number) => {
     setSelectedDestinationId(id);
-    handleGetIdFerDestination(id);
+    await handleGetIdFerDestination(id);
+    setOpenDialog(true);
   };
 
   const handleChange = (
@@ -115,10 +136,16 @@ const AdminTable: React.FC = () => {
       [name]: value,
     }));
   };
+  const [imageInputsFilled, setImageInputsFilled] = useState<boolean[]>([
+    false,
+    false,
+    false,
+  ]);
 
   const handleImageChange = (
     e: ChangeEvent<HTMLInputElement>,
-    imageField: keyof Destination
+    imageField: keyof Destination,
+    index: number
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -128,6 +155,15 @@ const AdminTable: React.FC = () => {
           ...prevDestination,
           [imageField]: reader.result as string,
         }));
+        setUploadedImages((prevImages) => [
+          ...prevImages,
+          reader.result as string,
+        ]);
+        setImageInputsFilled((prevFilled) => {
+          const filledCopy = [...prevFilled];
+          filledCopy[index] = true;
+          return filledCopy;
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -153,6 +189,20 @@ const AdminTable: React.FC = () => {
     } catch (error) {
       console.error("Error creating destination:", error);
     }
+    setNewDestination({
+      name: "",
+      description: "",
+      province_id: 0,
+      category_id: "",
+      lat: "",
+      long: "",
+      image1: "",
+      image2: "",
+      image3: "",
+      created_at: "",
+      updated_at: "",
+    });
+    setOpenDialog(true);
   };
 
   const handleUpdateDestination = async () => {
@@ -182,7 +232,6 @@ const AdminTable: React.FC = () => {
 
   const hanlerViewDetails = async (ButtonEditId: number) => {
     try {
-
       const response = await fetch(
         `${config.apiUrl}/admin/destination/${ButtonEditId}`,
         {
@@ -195,8 +244,8 @@ const AdminTable: React.FC = () => {
       );
 
       if (response.ok) {
-        const result = await  response.json() ;  
-        navigate('/DestinationDetails', { state: {result } });
+        const result = await response.json();
+        navigate("/DestinationDetails", { state: { result } });
       } else {
         console.log("Failed to fetch destination:", response.status);
       }
@@ -232,7 +281,9 @@ const AdminTable: React.FC = () => {
 
   const handleRemoveDestination = async (deletedId: number) => {
     try {
-      const confirmed = window.confirm("Are you sure you want to delete this destination?");
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this destination?"
+      );
       if (!confirmed) return;
 
       const response = await fetch(
@@ -259,22 +310,17 @@ const AdminTable: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(
-        `${config.apiUrl}/admin/category`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${config.accessToken}`,
-          },
-        }
-      );
+      const response = await fetch(`${config.apiUrl}/admin/category`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
       if (response.ok) {
         const category = await response.json();
-        const result = category.data ;
+        const result = category.data;
         setCategories(result);
-        console.log(result); 
-
-  
+        console.log(result);
       } else {
         console.log("Failed to category:", response.status);
       }
@@ -283,6 +329,56 @@ const AdminTable: React.FC = () => {
     }
   };
 
+  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+    [`&.${tableCellClasses.head}`]: {
+      backgroundColor: "#DEDEDE",
+
+      border: "none",
+      padding: "14px",
+      BorderAll: "10px",
+      fontWeight: "bold",
+      fontSize: "16px",
+      "&:first-child": {
+        borderTopLeftRadius: "14px",
+        paddingLeft: "20px",
+        borderBottomLeftRadius: "14px",
+      },
+      "&:last-child": {
+        borderTopRightRadius: "14px",
+        borderBottomRightRadius: "14px",
+      },
+    },
+    [`&.${tableCellClasses.body}`]: {
+      fontSize: 14,
+      border: "none",
+      "&:first-child": {
+        borderTopLeftRadius: "14px",
+        paddingLeft: "20px",
+        borderBottomLeftRadius: "14px",
+      },
+      "&:last-child": {
+        borderTopRightRadius: "14px",
+        borderBottomRightRadius: "14px",
+      },
+    },
+  }));
+
+  const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    // hide last border
+    "&:last-child td, &:last-child th": {
+      border: 0,
+    },
+  }));
+  const truncateText = (text, limit) => {
+    const words = text.split(" ");
+    if (words.length > limit) {
+      return words.slice(0, limit).join(" ") + " ...";
+    }
+    return text;
+  };
 
   return (
     <>
@@ -301,97 +397,138 @@ const AdminTable: React.FC = () => {
         </Button>
       </Box>
 
-      <Box sx={{ bgcolor: "white", padding: "25px" }}>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Images</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Province</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Location</TableCell>
-                <TableCell>Created At</TableCell>
-                <TableCell>Updated At</TableCell>
-                <TableCell>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      {row.image1 && (
-                        <img
-                          src={fileUrl+row.image1}
-                          alt="Destination"
-                          style={{ width: "100px", marginRight: "10px" }}
-                        />
-                      )}
-                      {row.image2 && (
-                        <img
-                          src={fileUrl+row.image2}
-                          alt="Destination"
-                          style={{ width: "100px", marginRight: "10px" }}
-                        />
-                      )}
-                      {row.image3 && (
-                        <img
-                          src={fileUrl+row.image3}
-                          alt="Destination"
-                          style={{ width: "100px", marginRight: "10px" }}
-                        />
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell style={{  maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis',whiteSpace: 'nowrap', }} >
-                  {row.description}
-
-                  </TableCell>
-                  <TableCell>
-                  {row.province ? row.province.name : ''}
-                  
-                  </TableCell>
-                  <TableCell>{row.category ? row.category.name : ''}</TableCell>
-                  <TableCell>
-                    {row.lat}, {row.long}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(row.created_at).toLocaleString()}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(row.updated_at).toLocaleString()}
-                  </TableCell>
-
-                  <TableCell>
-                  <Button
-                      onClick={() => row.id && hanlerViewDetails(row.id)}
-                    >
-                      <PreviewIcon  sx={{ color: "black" }}/>
-                 
-                    </Button>
-                    <Button
-                      onClick={() => row.id && handleEditDestination(row.id)}
-                    >
-                      <EditIcon  sx={{ color: "blue" }}/>
-
-                    </Button>
-
-                    <Button
-
-                      onClick={() => row.id && handleRemoveDestination(row.id)}
-                    >
-                      <DeleteIcon  sx={{ color: "red" }}/>
-                    </Button>
-                  </TableCell>
+      <Box sx={{ bgcolor: "white", padding: "20px" }}>
+        <TableContainer sx={{ borderRadius: "14px" }} component={Paper}>
+          <Box sx={{ padding: "20px" }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell sx={{ padding: "1  0" }}>ID</StyledTableCell>
+                  <StyledTableCell sx={{ padding: "0" }}>Name</StyledTableCell>
+                  <StyledTableCell sx={{ padding: "0" }}>
+                    Images
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ padding: "0" }}>
+                    Description
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ padding: "0" }}>
+                    Province
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ padding: "0" }}>
+                    Category
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ padding: "0" }}>
+                    Location
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ padding: "0" }}>
+                    Created At
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ padding: "0" }}>
+                    Updated At
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ padding: "0" }}>
+                    Action
+                  </StyledTableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <Box sx={{ padding: "14px" }}></Box>
+              <TableBody>
+                {data.map((row) => (
+                  <StyledTableRow key={row.id}>
+                    <StyledTableCell sx={{ padding: "20px" }}>
+                      {row.id}
+                    </StyledTableCell>
+                    <StyledTableCell sx={{ padding: "0" }}>
+                      {row.name}
+                    </StyledTableCell>
+                    <StyledTableCell sx={{ padding: "0" }}>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        {row.image1 && (
+                          <img
+                            src={fileUrl + row.image1}
+                            alt="Destination"
+                            style={{
+                              width: 40,
+                              height: 40,
+                              marginRight: "10px",
+                            }}
+                          />
+                        )}
+                        {row.image2 && (
+                          <img
+                            src={fileUrl + row.image2}
+                            alt="Destination"
+                            style={{
+                              width: 40,
+                              height: 40,
+                              marginRight: "10px",
+                            }}
+                          />
+                        )}
+                        {row.image3 && (
+                          <img
+                            src={fileUrl + row.image3}
+                            alt="Destination"
+                            style={{
+                              width: 40,
+                              height: 40,
+                              marginRight: "10px",
+                            }}
+                          />
+                        )}
+                      </div>
+                    </StyledTableCell>
+                    <StyledTableCell
+                      sx={{
+                        padding: "20px",
+                        maxWidth: "200px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {row.description}
+                    </StyledTableCell>
+                    <StyledTableCell sx={{ padding: "0" }}>
+                      {row.province ? row.province.name : ""}
+                    </StyledTableCell>
+                    <StyledTableCell sx={{ padding: "0" }}>
+                      {row.category ? row.category.name : ""}
+                    </StyledTableCell>
+                    <StyledTableCell sx={{ padding: "0" }}>
+                      {row.lat}, {row.long}
+                    </StyledTableCell>
+                    <StyledTableCell sx={{ padding: "0" }}>
+                      {new Date(row.created_at).toLocaleDateString()}
+                    </StyledTableCell>
+                    <StyledTableCell sx={{ padding: "0" }}>
+                      {new Date(row.updated_at).toLocaleDateString()}
+                    </StyledTableCell>
+
+                    <StyledTableCell sx={{ padding: "0" }}>
+                      <Button
+                        onClick={() => row.id && hanlerViewDetails(row.id)}
+                      >
+                        <PreviewIcon sx={{ color: "black" }} />
+                      </Button>
+                      <Button
+                        onClick={() => row.id && handleEditDestination(row.id)}
+                      >
+                        <EditIcon sx={{ color: "blue" }} />
+                      </Button>
+                      <Button
+                        onClick={() =>
+                          row.id && handleRemoveDestination(row.id)
+                        }
+                      >
+                        <DeleteIcon sx={{ color: "red" }} />
+                      </Button>
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
         </TableContainer>
       </Box>
 
@@ -401,100 +538,131 @@ const AdminTable: React.FC = () => {
         </DialogTitle>
         <DialogContent>
           <form>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              name="name"
-              label="Name"
-              type="text"
-              fullWidth
-              value={newDestination.name}
-              onChange={handleChange}
-            />
-            <TextField
-                select
-                margin="dense"
-                id="category_id"
-                name="category_id"   
-                label="Category"
-                fullWidth
-                value={newDestination.category_id.id}
-                onChange={handleChange}
-              >
-                 {categories.map((item) => (
-                 <MenuItem key={item.id} value={item.id} >
-                 {item.name}
-            
-               </MenuItem>
-                ))} 
-              </TextField>
- 
-           <TextField
-              margin="dense"
-              id="province_id"
-              name="province_id"
-              label="Province_id"
-              type="number"
-              fullWidth
-              value={newDestination.province_id}
-              onChange={handleChange}
-            /> 
-            <TextField
-              margin="dense"
-              id="description"
-              name="description"
-              label="description"
-              type="text"
-              fullWidth
-              value={newDestination.description}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="dense"
-              id="lat"
-              name="lat"
-              label="Latitude"
-              type="text"
-              fullWidth
-              value={newDestination.lat}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="dense"
-              id="long"
-              name="long"
-              label="Longitude"
-              type="text"
-              fullWidth
-              value={newDestination.long}
-              onChange={handleChange}
-            />
-            {/* Image upload fields */}
-            <Typography>Upload Image 1</Typography>
-            <Input
-              type="file"
-              inputProps={{ accept: "image/*" }}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleImageChange(e, "image1")
-              }
-            />
-            <Typography>Upload Image 2</Typography>
-            <Input
-              type="file"
-              inputProps={{ accept: "image/*" }}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleImageChange(e, "image2")
-              }
-            />
-            <Typography>Upload Image 3</Typography>
-            <Input
-              type="file"
-              inputProps={{ accept: "image/*" }}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleImageChange(e, "image3")
-              }
-            />
+            <Grid container spacing={2}>
+              {/* Name */}
+              <Grid item xs={12}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  name="name"
+                  label="Name"
+                  type="text"
+                  fullWidth
+                  value={newDestination.name}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={6}>
+                <TextField
+                  margin="dense"
+                  id="province_id"
+                  name="province_id"
+                  label="Province ID"
+                  type="number"
+                  fullWidth
+                  value={newDestination.province_id}
+                  onChange={handleChange}
+                />
+              </Grid>
+              {/* Category and Province */}
+              <Grid item xs={6}>
+                <TextField
+                  select
+                  margin="dense"
+                  id="category_id"
+                  name="category_id"
+                  label="Category"
+                  fullWidth
+                  value={newDestination.category_id.id}
+                  onChange={handleChange}
+                >
+                  {categories.map((item) => (
+                    <MenuItem key={item.id} value={item.id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              {/* Description */}
+              <Grid item xs={12}>
+                <TextField
+                  margin="dense"
+                  id="description"
+                  name="description"
+                  label="Description"
+                  type="text"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  value={newDestination.description}
+                  onChange={handleChange}
+                />
+              </Grid>
+              {/* Latitude and Longitude */}
+              <Grid item xs={6}>
+                <TextField
+                  margin="dense"
+                  id="lat"
+                  name="lat"
+                  label="Latitude"
+                  type="text"
+                  fullWidth
+                  value={newDestination.lat}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  margin="dense"
+                  id="long"
+                  name="long"
+                  label="Longitude"
+                  type="text"
+                  fullWidth
+                  value={newDestination.long}
+                  onChange={handleChange}
+                />
+              </Grid>
+              {/* Image upload fields */}
+              <Grid item xs={12}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Upload Images
+                </Typography>
+              </Grid>
+              {[1, 2, 3].map((index) => (
+                <Grid item xs={12} sm={4} key={`image${index}`}>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    htmlFor={`image${index}`}
+                    style={{
+                      width: "100%",
+                      minHeight: "100px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Choose Image {index}
+                    <Input
+                      type="file"
+                      id={`image${index}`}
+                      inputProps={{ accept: "image/*" }}
+                      style={{ display: "none" }}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleImageChange(e, `image${index}`, index - 1)
+                      }
+                    />
+                  </Button>
+                  {imageInputsFilled[index - 1] && (
+                    <CheckIcon style={{ color: "green" }} />
+                  )}
+                </Grid>
+              ))}
+            </Grid>
           </form>
         </DialogContent>
         <DialogActions>
@@ -506,6 +674,7 @@ const AdminTable: React.FC = () => {
                 : handleAddDestination
             }
             color="primary"
+            variant="contained"
           >
             {selectedDestinationId ? "Update" : "Add"}
           </Button>
