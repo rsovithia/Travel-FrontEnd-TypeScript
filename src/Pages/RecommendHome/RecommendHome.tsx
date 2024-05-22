@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Container,
   Typography,
@@ -6,8 +6,12 @@ import {
   CardMedia,
   Grid,
   Box,
+  Button,
 } from "@mui/material";
 import { Link } from "react-router-dom"; // Import Link from React Router
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 const provinces = [
   {
@@ -35,68 +39,154 @@ const provinces = [
     image:
       "https://lp-cms-production.imgix.net/2019-06/474416112_super.jpg?fit=crop&q=40&sharp=10&vib=20&auto=format&ixlib=react-8.6.4",
   },
+  {
+    name: "Battambang",
+    description:
+      "Known for its colonial architecture and nearby ancient temples.",
+    image:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Battambang_central_market.jpg/800px-Battambang_central_market.jpg",
+  },
   // Add more provinces as needed
 ];
 
 const Destinations = () => {
+  const [isLongPress, setIsLongPress] = useState(false);
+  let timer;
+
+  const settings = {
+    dots: true,
+    infinite: false, // Disable infinite loop
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+          infinite: false, // Disable infinite loop
+          dots: true,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          infinite: false, // Disable infinite loop
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: false, // Disable infinite loop
+        },
+      },
+    ],
+  };
+
+  const handleMouseDown = () => {
+    timer = setTimeout(() => {
+      setIsLongPress(true);
+    }, 500); // Adjust the duration as needed
+  };
+
+  const handleMouseUp = () => {
+    clearTimeout(timer);
+    if (!isLongPress) {
+      // This means it was a click, not a long press
+      setIsLongPress(false);
+    }
+  };
+
+  const handleClick = (e) => {
+    if (isLongPress) {
+      e.preventDefault(); // Prevent the default action if it's a long press
+      setIsLongPress(false);
+    }
+  };
+
   return (
-    <>
-      <Container maxWidth="lg">
-        <Typography
-          sx={{ paddingTop: "20px", color: "white" }}
-          variant="h2"
-          align="center"
-          gutterBottom
-        >
-          Destinations in Cambodia
-        </Typography>
-        <Typography
-          sx={{ paddingBottom: "20px", color: "white" }}
-          variant="subtitle1"
-          align="center"
-          gutterBottom
-        >
-          There will be a small title here.
-        </Typography>
-        <Grid container spacing={3}>
-          {provinces.map((province, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Card
-                elevation={2}
-                sx={{ position: "relative", backgroundColor: "black" }}
-              >
-                <CardMedia
-                  component="img"
-                  sx={{ height: 300, objectFit: "cover" }} // Adjust to fill in the space
-                  image={province.image} // Use province image
-                  alt={province.name}
-                />
-                <Box
+    <Container sx={{ padding: "40px" }}>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={4}>
+          <Typography variant="h2" gutterBottom>
+            Destinations in Cambodia
+          </Typography>
+          <Typography variant="subtitle1" gutterBottom>
+            There will be a small title here.
+          </Typography>
+        </Grid>
+        <Grid item xs={12} md={8}>
+          <Slider {...settings}>
+            {provinces.map((province, index) => (
+              <Box key={index} paddingRight={10}>
+                <Card
+                  elevation={4}
                   sx={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    width: "100%",
-                    zIndex: 100,
-                    padding: "10px",
-                    textAlign: "center",
-                    background:
-                      "linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 100%)", // Gradient background for text
+                    position: "relative",
+                    backgroundColor: "black",
+                    margin: "10px",
+                    padding: "px", // Add padding to the card
+                    borderRadius: "15px", // Add border-radius to the card
+                    overflow: "hidden", // Ensure child elements are clipped to card bounds
                   }}
                 >
-                  <Typography variant="h6" component="div" color="white">
-                    {province.name}
-                  </Typography>
-                  <Typography variant="body2" color="white">
-                    {province.description}
-                  </Typography>
-                </Box>
-              </Card>
-            </Grid>
-          ))}
+                  <CardMedia
+                    component="img"
+                    sx={{
+                      height: 400,
+                      objectFit: "cover",
+                      borderRadius: "15px", // Match border-radius to the card
+                    }}
+                    image={province.image}
+                    alt={province.name}
+                  />
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      bottom: 0,
+                      left: 0,
+                      width: "100%",
+                      zIndex: 100,
+                      padding: "10px",
+                      textAlign: "left",
+                      background:
+                        "linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 100%)",
+                    }}
+                  >
+                    <Typography variant="h6" component="div" color="white">
+                      {province.name}
+                    </Typography>
+                    <Typography variant="body2" color="white">
+                      {province.description}
+                    </Typography>
+                    <Link
+                      to={`/province/${province.name}`}
+                      style={{ textDecoration: "none" }}
+                      onClick={handleClick}
+                      onMouseDown={handleMouseDown}
+                      onMouseUp={handleMouseUp}
+                    >
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        sx={{ marginTop: "10px" }}
+                      >
+                        Learn More
+                      </Button>
+                    </Link>
+                  </Box>
+                </Card>
+              </Box>
+            ))}
+          </Slider>
         </Grid>
-      </Container>
-    </>
+      </Grid>
+    </Container>
   );
 };
 
