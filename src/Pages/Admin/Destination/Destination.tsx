@@ -6,7 +6,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Input,
   Paper,
   Select,
   MenuItem,
@@ -21,21 +20,14 @@ import {
   styled,
   tableCellClasses,
   Grid,
-  InputLabel,
+  Input,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import PreviewIcon from "@mui/icons-material/Preview";
+import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
-
-import CheckIcon from '@mui/icons-material/Check';
-
 import config from "../../../Api/config";
-import { BorderAll, Margin, Padding } from "@mui/icons-material";
-
-
-
 
 interface Destination {
   id?: number;
@@ -72,6 +64,12 @@ const AdminTable: React.FC = () => {
     created_at: "",
     updated_at: "",
   });
+  const [imageInputsFilled, setImageInputsFilled] = useState<boolean[]>([
+    false,
+    false,
+    false,
+  ]);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   const fileUrl = config.fileUrl;
   const navigate = useNavigate();
@@ -89,21 +87,38 @@ const AdminTable: React.FC = () => {
           Authorization: `Bearer ${config.accessToken}`,
         },
       });
-
       if (response.ok) {
         const jsonData = await response.json();
         setData(jsonData.data);
       } else {
-        console.log("Failed to fetch data:", response.status);
+        console.error("Failed to fetch data:", response.status);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${config.apiUrl}/admin/category`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
+      if (response.ok) {
+        const category = await response.json();
+        setCategories(category.data);
+      } else {
+        console.error("Failed to fetch categories:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
   const handleOpenDialog = () => {
     setOpenDialog(true);
-
     setNewDestination({
       name: "",
       description: "",
@@ -126,8 +141,68 @@ const AdminTable: React.FC = () => {
 
   const handleEditDestination = async (id: number) => {
     setSelectedDestinationId(id);
-    await handleGetIdFerDestination(id);
+    await handleGetDestinationById(id);
     setOpenDialog(true);
+  };
+
+  const handleGetDestinationById = async (id: number) => {
+    try {
+      const response = await fetch(`${config.apiUrl}/admin/destination/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
+      if (response.ok) {
+        const destinationData = await response.json();
+        setNewDestination(destinationData.data);
+      } else {
+        console.error("Failed to fetch destination:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching destination:", error);
+    }
+  };
+
+  const handleRemoveDestination = async (id: number) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this destination?"
+    );
+    if (!confirmed) return;
+    try {
+      const response = await fetch(`${config.apiUrl}/admin/destination/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
+      if (response.ok) {
+        getData();
+      } else {
+        console.error("Failed to delete destination:", response.status);
+      }
+    } catch (error) {
+      console.error("Error deleting destination:", error);
+    }
+  };
+
+  const handleViewDetails = async (id: number) => {
+    try {
+      const response = await fetch(`${config.apiUrl}/admin/destination/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
+      if (response.ok) {
+        const result = await response.json();
+        navigate("/DestinationDetails", { state: { result } });
+      } else {
+        console.error("Failed to fetch destination:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching destination:", error);
+    }
   };
 
   const handleChange = (
@@ -139,11 +214,6 @@ const AdminTable: React.FC = () => {
       [name]: value,
     }));
   };
-  const [imageInputsFilled, setImageInputsFilled] = useState<boolean[]>([
-    false,
-    false,
-    false,
-  ]);
 
   const handleImageChange = (
     e: ChangeEvent<HTMLInputElement>,
@@ -182,30 +252,15 @@ const AdminTable: React.FC = () => {
         },
         body: JSON.stringify(newDestination),
       });
-
       if (response.ok) {
         getData();
         handleCloseDialog();
       } else {
-        console.log("Failed to create destination:", response.status);
+        console.error("Failed to create destination:", response.status);
       }
     } catch (error) {
       console.error("Error creating destination:", error);
     }
-    setNewDestination({
-      name: "",
-      description: "",
-      province_id: 0,
-      category_id: "",
-      lat: "",
-      long: "",
-      image1: "",
-      image2: "",
-      image3: "",
-      created_at: "",
-      updated_at: "",
-    });
-    setOpenDialog(true);
   };
 
   const handleUpdateDestination = async () => {
@@ -221,124 +276,22 @@ const AdminTable: React.FC = () => {
           body: JSON.stringify(newDestination),
         }
       );
-
       if (response.ok) {
         getData();
         handleCloseDialog();
       } else {
-        console.log("Failed to update destination:", response.status);
+        console.error("Failed to update destination:", response.status);
       }
     } catch (error) {
       console.error("Error updating destination:", error);
     }
   };
 
-  const hanlerViewDetails = async (ButtonEditId: number) => {
-    try {
-      const response = await fetch(
-        `${config.apiUrl}/admin/destination/${ButtonEditId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${config.accessToken}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        const result = await response.json();
-        navigate("/DestinationDetails", { state: { result } });
-      } else {
-        console.log("Failed to fetch destination:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching destination:", error);
-    }
-  };
-
-  const handleGetIdFerDestination = async (ButtonEditId: number) => {
-    try {
-      const response = await fetch(
-        `${config.apiUrl}/admin/destination/${ButtonEditId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${config.accessToken}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        const destinationData = await response.json();
-        setNewDestination(destinationData.data);
-        setOpenDialog(true);
-      } else {
-        console.log("Failed to fetch destination:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching destination:", error);
-    }
-  };
-
-  const handleRemoveDestination = async (deletedId: number) => {
-    try {
-      const confirmed = window.confirm(
-        "Are you sure you want to delete this destination?"
-      );
-      if (!confirmed) return;
-
-      const response = await fetch(
-        `${config.apiUrl}/admin/destination/${deletedId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${config.accessToken}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        getData();
-        handleCloseDialog();
-      } else {
-        console.log("Failed to delete destination:", response.status);
-      }
-    } catch (error) {
-      console.error("Error deleting destination:", error);
-    }
-  };
-
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch(`${config.apiUrl}/admin/category`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${config.accessToken}`,
-        },
-      });
-      if (response.ok) {
-        const category = await response.json();
-        const result = category.data;
-        setCategories(result);
-        console.log(result);
-      } else {
-        console.log("Failed to category:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
-
   const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: "#DEDEDE",
-
       border: "none",
       padding: "14px",
-      BorderAll: "10px",
       fontWeight: "bold",
       fontSize: "16px",
       "&:first-child": {
@@ -370,18 +323,10 @@ const AdminTable: React.FC = () => {
     "&:nth-of-type(odd)": {
       backgroundColor: theme.palette.action.hover,
     },
-    // hide last border
     "&:last-child td, &:last-child th": {
       border: 0,
     },
   }));
-  const truncateText = (text, limit) => {
-    const words = text.split(" ");
-    if (words.length > limit) {
-      return words.slice(0, limit).join(" ") + " ...";
-    }
-    return text;
-  };
 
   return (
     <>
@@ -406,45 +351,24 @@ const AdminTable: React.FC = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <StyledTableCell sx={{ padding: "1  0" }}>ID</StyledTableCell>
-                  <StyledTableCell sx={{ padding: "0" }}>Name</StyledTableCell>
-                  <StyledTableCell sx={{ padding: "0" }}>
-                    Images
-                  </StyledTableCell>
-                  <StyledTableCell sx={{ padding: "0" }}>
-                    Description
-                  </StyledTableCell>
-                  <StyledTableCell sx={{ padding: "0" }}>
-                    Province
-                  </StyledTableCell>
-                  <StyledTableCell sx={{ padding: "0" }}>
-                    Category
-                  </StyledTableCell>
-                  <StyledTableCell sx={{ padding: "0" }}>
-                    Location
-                  </StyledTableCell>
-                  <StyledTableCell sx={{ padding: "0" }}>
-                    Created At
-                  </StyledTableCell>
-                  <StyledTableCell sx={{ padding: "0" }}>
-                    Updated At
-                  </StyledTableCell>
-                  <StyledTableCell sx={{ padding: "0" }}>
-                    Action
-                  </StyledTableCell>
+                  <StyledTableCell>ID</StyledTableCell>
+                  <StyledTableCell>Name</StyledTableCell>
+                  <StyledTableCell>Images</StyledTableCell>
+                  <StyledTableCell>Description</StyledTableCell>
+                  <StyledTableCell>Province</StyledTableCell>
+                  <StyledTableCell>Category</StyledTableCell>
+                  <StyledTableCell>Location</StyledTableCell>
+                  <StyledTableCell>Created At</StyledTableCell>
+                  <StyledTableCell>Updated At</StyledTableCell>
+                  <StyledTableCell>Action</StyledTableCell>
                 </TableRow>
               </TableHead>
-              <Box sx={{ padding: "14px" }}></Box>
               <TableBody>
                 {data.map((row) => (
                   <StyledTableRow key={row.id}>
-                    <StyledTableCell sx={{ padding: "20px" }}>
-                      {row.id}
-                    </StyledTableCell>
-                    <StyledTableCell sx={{ padding: "0" }}>
-                      {row.name}
-                    </StyledTableCell>
-                    <StyledTableCell sx={{ padding: "0" }}>
+                    <StyledTableCell>{row.id}</StyledTableCell>
+                    <StyledTableCell>{row.name}</StyledTableCell>
+                    <StyledTableCell>
                       <div style={{ display: "flex", alignItems: "center" }}>
                         {row.image1 && (
                           <img
@@ -483,7 +407,6 @@ const AdminTable: React.FC = () => {
                     </StyledTableCell>
                     <StyledTableCell
                       sx={{
-                        padding: "20px",
                         maxWidth: "200px",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
@@ -492,25 +415,24 @@ const AdminTable: React.FC = () => {
                     >
                       {row.description}
                     </StyledTableCell>
-                    <StyledTableCell sx={{ padding: "0" }}>
+                    <StyledTableCell>
                       {row.province ? row.province.name : ""}
                     </StyledTableCell>
-                    <StyledTableCell sx={{ padding: "0" }}>
+                    <StyledTableCell>
                       {row.category ? row.category.name : ""}
                     </StyledTableCell>
-                    <StyledTableCell sx={{ padding: "0" }}>
+                    <StyledTableCell>
                       {row.lat}, {row.long}
                     </StyledTableCell>
-                    <StyledTableCell sx={{ padding: "0" }}>
+                    <StyledTableCell>
                       {new Date(row.created_at).toLocaleDateString()}
                     </StyledTableCell>
-                    <StyledTableCell sx={{ padding: "0" }}>
+                    <StyledTableCell>
                       {new Date(row.updated_at).toLocaleDateString()}
                     </StyledTableCell>
-
-                    <StyledTableCell sx={{ padding: "0" }}>
+                    <StyledTableCell>
                       <Button
-                        onClick={() => row.id && hanlerViewDetails(row.id)}
+                        onClick={() => row.id && handleViewDetails(row.id)}
                       >
                         <PreviewIcon sx={{ color: "black" }} />
                       </Button>
@@ -542,7 +464,6 @@ const AdminTable: React.FC = () => {
         <DialogContent>
           <form>
             <Grid container spacing={2}>
-              {/* Name */}
               <Grid item xs={12}>
                 <TextField
                   autoFocus
@@ -556,7 +477,6 @@ const AdminTable: React.FC = () => {
                   onChange={handleChange}
                 />
               </Grid>
-
               <Grid item xs={6}>
                 <TextField
                   margin="dense"
@@ -569,7 +489,6 @@ const AdminTable: React.FC = () => {
                   onChange={handleChange}
                 />
               </Grid>
-              {/* Category and Province */}
               <Grid item xs={6}>
                 <TextField
                   select
@@ -578,7 +497,7 @@ const AdminTable: React.FC = () => {
                   name="category_id"
                   label="Category"
                   fullWidth
-                  value={newDestination.category_id.id}
+                  value={newDestination.category_id}
                   onChange={handleChange}
                 >
                   {categories.map((item) => (
@@ -588,7 +507,6 @@ const AdminTable: React.FC = () => {
                   ))}
                 </TextField>
               </Grid>
-              {/* Description */}
               <Grid item xs={12}>
                 <TextField
                   margin="dense"
@@ -603,7 +521,6 @@ const AdminTable: React.FC = () => {
                   onChange={handleChange}
                 />
               </Grid>
-              {/* Latitude and Longitude */}
               <Grid item xs={6}>
                 <TextField
                   margin="dense"
@@ -628,7 +545,6 @@ const AdminTable: React.FC = () => {
                   onChange={handleChange}
                 />
               </Grid>
-              {/* Image upload fields */}
               <Grid item xs={12}>
                 <Typography variant="subtitle1" gutterBottom>
                   Upload Images
@@ -656,7 +572,11 @@ const AdminTable: React.FC = () => {
                       inputProps={{ accept: "image/*" }}
                       style={{ display: "none" }}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleImageChange(e, `image${index}`, index - 1)
+                        handleImageChange(
+                          e,
+                          `image${index}` as keyof Destination,
+                          index - 1
+                        )
                       }
                     />
                   </Button>

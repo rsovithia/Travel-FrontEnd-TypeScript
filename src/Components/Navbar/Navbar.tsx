@@ -1,104 +1,206 @@
-import { useState, useEffect } from "react";
-import { Grid, Typography, Button, Box } from "@mui/material";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Grid,
+  Typography,
+  Button,
+  Box,
+  MenuItem,
+  ClickAwayListener,
+  Grow,
+  MenuList,
+  Paper,
+  Popper,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router-dom";
-import Sidebar from "./../Navbar/MenulList";
+import IconButton from "@mui/material/IconButton";
 import "./Navbar.css";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 700);
+  const [prevScrollPos, setPrevScrollPos] = useState(window.pageYOffset);
+  const [visible, setVisible] = useState(true);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [open, setOpen] = useState(false);
+  const anchorRef = useRef<HTMLButtonElement>(null);
+
+  const user = {
+    name: "Rith",
+    email: "vithiasokh@gmail.com",
+    profilePicture: "/path/to/profile.jpg",
+  };
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsSmallScreen(window.innerWidth < 700);
+    const handleResize = () => setIsSmallScreen(window.innerWidth < 700);
+    const handleScroll = () => {
+      const currentScrollPos = window.pageYOffset;
+      setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
+      setPrevScrollPos(currentScrollPos);
+      if (prevScrollPos < currentScrollPos && open) {
+        setOpen(false);
+      }
     };
 
     window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleScroll);
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [prevScrollPos, open]);
 
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-    if (!menuOpen) {
-      document.body.style.overflow = "hidden"; // Prevent scrolling when drawer is open
-    } else {
-      document.body.style.overflow = "visible"; // Allow scrolling when drawer is closed
+    setMenuOpen((prev) => !prev);
+    document.body.style.overflow = menuOpen ? "visible" : "hidden";
+  };
+
+  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event: Event | React.SyntheticEvent) => {
+    if (
+      anchorRef.current &&
+      anchorRef.current.contains(event.target as HTMLElement)
+    ) {
+      return;
+    }
+    setOpen(false);
+  };
+
+  const handleListKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      setOpen(false);
+    } else if (event.key === "Escape") {
+      setOpen(false);
     }
   };
 
-  const handleMenuClose = () => {
-    setMenuOpen(false);
-    document.body.style.overflow = "visible"; // Ensure scrolling is allowed when drawer is closed
-  };
+  useEffect(() => {
+    if (prevOpen.current === true && open === false) {
+      anchorRef.current!.focus();
+    }
+    prevOpen.current = open;
+  }, [open]);
+
+  const prevOpen = useRef(open);
 
   return (
     <Grid
       container
-      display={"flex"}
       alignItems="center"
       justifyContent="space-between"
-      className="Navbar"
+      className={`Navbar ${visible ? "visible" : "hidden"}`}
       style={{
         background:
-          "linear-gradient(260deg, rgba(223, 110, 26, 0.8), rgba(237, 168, 33, 0.8))", 
+          "linear-gradient(260deg, rgba(223, 110, 26, 0.8), rgba(237, 168, 33, 0.8))",
         boxShadow: "0 5px 15px 0 rgba(0, 0, 0, 0.25)",
         height: "80px",
-        display: "flex",
-        margin: "0",
-        zIndex: "998",
+        zIndex: 998,
         position: "fixed",
+        top: visible ? "20px" : "-80px",
         left: "50%",
         transform: "translateX(-50%)",
-        width: "94%",
+        width: "98%",
         borderRadius: "10px",
+        transition: "top 0.3s",
       }}
     >
       <Grid item>
         <Typography variant="h6">Travel Logo</Typography>
       </Grid>
       <Grid item>
-        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           {isSmallScreen ? (
             <>
-              <Button color="inherit" onClick={toggleMenu}>
+              <IconButton color="inherit" onClick={toggleMenu}>
                 {menuOpen ? <CloseIcon /> : <MenuIcon />}
-              </Button>
-              <Sidebar open={menuOpen} onClose={handleMenuClose} />
+              </IconButton>
             </>
           ) : (
-            <Grid container>
-              <Grid item>
-                <Button color="inherit" component={Link} to="/">
-                  Home
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button color="inherit" component={Link} to="/destinations">
-                  Destinations
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button color="inherit" component={Link} to="/#">
-                  Recommandation
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button color="inherit" component={Link} to="/login">
-                  Login
-                </Button>
-              </Grid>
-
-              {/* <Grid item>
-                <Button color="inherit" component={Link} to="/contact">
-                  Contact
-                </Button>
-              </Grid> */}
-            </Grid>
+            <>
+              <Button color="inherit" component={Link} to="/">
+                Home
+              </Button>
+              <Button color="inherit" component={Link} to="/destinations">
+                Destinations
+              </Button>
+              <Button color="inherit" component={Link} to="/#">
+                Recommendation
+              </Button>
+              <Button color="inherit" component={Link} to="/login">
+                Login
+              </Button>
+              <Button
+                ref={anchorRef}
+                aria-controls={open ? "composition-menu" : undefined}
+                aria-expanded={open ? "true" : undefined}
+                aria-haspopup="true"
+                onClick={handleToggle}
+              >
+                Dashboard
+              </Button>
+              <Popper
+                open={open}
+                anchorEl={anchorRef.current}
+                role={undefined}
+                placement="bottom-start"
+                transition
+                disablePortal
+              >
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{
+                      transformOrigin:
+                        placement === "bottom-start"
+                          ? "left top"
+                          : "left bottom",
+                    }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={handleClose}>
+                        <MenuList
+                          sx={{ width: "250px" }}
+                          autoFocusItem={open}
+                          id="composition-menu"
+                          aria-labelledby="composition-button"
+                          onKeyDown={handleListKeyDown}
+                        >
+                          <MenuItem onClick={handleProfileMenuClose}>
+                            Profile
+                          </MenuItem>
+                          <MenuItem onClick={handleProfileMenuClose}>
+                            My account
+                          </MenuItem>
+                          <MenuItem onClick={handleProfileMenuClose}>
+                            Logout
+                          </MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </>
           )}
         </Box>
       </Grid>

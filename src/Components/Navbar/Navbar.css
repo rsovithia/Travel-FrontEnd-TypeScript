@@ -6,14 +6,19 @@
   box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.25);
   height: 80px;
   margin: 0;
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
   width: 94%;
   border-radius: 10px;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 998;
 }
-/* Navbar.css */
+
+.content {
+  margin-top: 100px; /* Adjust this value based on the height of the Navbar */
+}
+
 .body-shift {
   overflow-x: hidden;
 }

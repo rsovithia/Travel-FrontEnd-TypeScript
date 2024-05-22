@@ -11,7 +11,9 @@ import {
 import CoverSection from "../../Components/CoverSection/CoverSection";
 import icon from "../../assets/Vector.svg";
 import Footer from "../../Components/Footer/Footer";
-
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import DetailHomePages from "../DetailHomePages/DetailHomePages";
+import RecommendHome from "../RecommendHome/RecommendHome";
 // Mock data for cover section
 const coverData = {
   title: "Travel Website",
@@ -63,62 +65,9 @@ export default function Home() {
   return (
     <>
       <CoverSection />
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: "20px",
-        }}
-      >
-        <Box
-          sx={{
-            maxWidth: "100%",
-            paddingRight: "20px", // Add some space between the image and text
-          }}
-        >
-          <Card sx={{ maxWidth: 345 }}>
-            <CardActionArea>
-              <CardMedia
-                component="img"
-                height="300"
-                width="500"
-                image={icon}
-                alt="   "
-              />
-            </CardActionArea>
-          </Card>
-        </Box>
-        <Box
-          sx={{
-            maxWidth: "50%",
-            paddingLeft: "20px", // Add some space between the image and text
-          }}
-        >
-          <Box sx={{ padding: "0px" }}>
-            <Typography
-              sx={{ fontWeight: "600" }}
-              gutterBottom
-              variant="h5"
-              component="div"
-            >
-              Travel Website
-            </Typography>
-            <Typography paragraph>
-              Travel app is the website that helps you find your destination in
-              Cambodia. Whether you're looking for historical sites, natural
-              wonders, or cultural experiences, our platform provides
-              comprehensive information to make your trip memorable.
-            </Typography>
-            <Typography>
-              Explore Cambodia's diverse provinces, from the bustling streets of
-              Phnom Penh to the serene landscapes of Siem Reap. Our platform
-              showcases the beauty and richness of each region, allowing you to
-              plan your itinerary with ease.
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
+      <RecommendHome />
+      <DetailHomePages />
+
       <Box
         sx={{
           bgcolor: "#EDA821",

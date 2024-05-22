@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Login.css";
 // import Logo from "../../assets/Images/logo_itc.svg";
 import { useNavigate } from "react-router-dom";
+
 import { authenticate } from "../../Auth/auth";
 
 const Login: React.FC = () => {
@@ -14,7 +15,7 @@ const Login: React.FC = () => {
       const response = await authenticate(email, password);
       console.log("Login successful:", response);
 
-      navigate("/dashboard", { state: {response}});
+      navigate("/Calendar");
     } catch (error) {
       console.error("Login failed:", error);
     }

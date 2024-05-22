@@ -4,17 +4,15 @@ import {
   Typography,
   Card,
   CardMedia,
-  CardContent,
   Grid,
-  Button,
-  Box, // Import Box from Material-UI
+  Box,
 } from "@mui/material";
 import { Link } from "react-router-dom"; // Import Link from React Router
 
 const provinces = [
   {
     name: "Phnom Penh",
-    description: "The capital city of Cambodia. And have alot place ",
+    description: "The capital city of Cambodia. And have a lot of places.",
     image:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Phnom_Penh_Independence_Monument.jpg/800px-Phnom_Penh_Independence_Monument.jpg",
   },
@@ -43,56 +41,56 @@ const provinces = [
 const Destinations = () => {
   return (
     <>
-      <Box sx={{ width: "100%", overflow: "hidden" }}>
-        <Card elevation={2} sx={{ borderRadius: 0 }}>
-          <CardMedia
-            component="img"
-            height="500"
-            image="https://lp-cms-production.imgix.net/2019-06/474416112_super.jpg?fit=crop&q=40&sharp=10&vib=20&auto=format&ixlib=react-8.6.4" // Replace with your cover image URL
-            alt="Cover Image"
-            sx={{ width: "100vw", marginLeft: "calc(-50vw + 50%)" }} // Make image full width
-          />
-        </Card>
-      </Box>
       <Container maxWidth="lg">
         <Typography
-          sx={{ paddingTop: "20px" }}
+          sx={{ paddingTop: "20px", color: "white" }}
           variant="h2"
           align="center"
           gutterBottom
         >
           Destinations in Cambodia
         </Typography>
+        <Typography
+          sx={{ paddingBottom: "20px", color: "white" }}
+          variant="subtitle1"
+          align="center"
+          gutterBottom
+        >
+          There will be a small title here.
+        </Typography>
         <Grid container spacing={3}>
           {provinces.map((province, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
-              <Card elevation={2}>
+              <Card
+                elevation={2}
+                sx={{ position: "relative", backgroundColor: "black" }}
+              >
                 <CardMedia
                   component="img"
-                  sx={{ height: 200 }} // Maintain 16:9 aspect ratio
+                  sx={{ height: 300, objectFit: "cover" }} // Adjust to fill in the space
                   image={province.image} // Use province image
                   alt={province.name}
                 />
-                <CardContent
+                <Box
                   sx={{
-                    overflow: "auto",
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    width: "100%",
+                    zIndex: 100,
+                    padding: "10px",
+                    textAlign: "center",
+                    background:
+                      "linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 100%)", // Gradient background for text
                   }}
                 >
-                  <Typography variant="h5" gutterBottom>
+                  <Typography variant="h6" component="div" color="white">
                     {province.name}
                   </Typography>
-                  <Typography variant="body1" paragraph>
+                  <Typography variant="body2" color="white">
                     {province.description}
                   </Typography>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    component={Link} // Use Link component from React Router
-                    to={`/DestinationDetails`} // Navigate to /DestinationDetails
-                  >
-                    Learn More
-                  </Button>
-                </CardContent>
+                </Box>
               </Card>
             </Grid>
           ))}
