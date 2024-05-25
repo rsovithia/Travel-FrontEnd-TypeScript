@@ -10,11 +10,12 @@ import {
   MenuList,
   Paper,
   Popper,
+  Avatar,
+  IconButton,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -54,7 +55,7 @@ export default function Navbar() {
 
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev);
-    document.body.style.overflow = menuOpen ? "visible" : "hidden";
+    document.body.style.overflow = menuOpen ? "hidden" : "visible";
   };
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -119,7 +120,9 @@ export default function Navbar() {
       }}
     >
       <Grid item>
-        <Typography variant="h6">Travel Logo</Typography>
+        <Typography sx={{ fontWeight: 600 }} variant="h5">
+          Travel Logo
+        </Typography>
       </Grid>
       <Grid item>
         <Box
@@ -172,8 +175,8 @@ export default function Navbar() {
                     style={{
                       transformOrigin:
                         placement === "bottom-start"
-                          ? "left top"
-                          : "left bottom",
+                          ? "right bottom"
+                          : "center top",
                     }}
                   >
                     <Paper>
@@ -185,15 +188,42 @@ export default function Navbar() {
                           aria-labelledby="composition-button"
                           onKeyDown={handleListKeyDown}
                         >
-                          <MenuItem onClick={handleProfileMenuClose}>
-                            Profile
+                          <MenuItem>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                padding: "16px",
+                                textAlign: "center",
+                                width: "100%", // Added to center content
+                              }}
+                            >
+                              <Avatar
+                                alt={user.name}
+                                src={user.profilePicture}
+                                sx={{ width: 56, height: 56, marginBottom: 1 }}
+                              />
+                              <Typography variant="body1">
+                                {user.name}
+                              </Typography>
+                              <Typography variant="body2" color="textSecondary">
+                                {user.email}
+                              </Typography>
+                            </Box>
                           </MenuItem>
-                          <MenuItem onClick={handleProfileMenuClose}>
-                            My account
-                          </MenuItem>
-                          <MenuItem onClick={handleProfileMenuClose}>
-                            Logout
-                          </MenuItem>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              padding: "16px",
+                              textAlign: "center",
+                            }}
+                          >
+                            <Button variant="outlined">Delete</Button>
+                            <Button variant="contained">Send</Button>
+                          </Box>
                         </MenuList>
                       </ClickAwayListener>
                     </Paper>

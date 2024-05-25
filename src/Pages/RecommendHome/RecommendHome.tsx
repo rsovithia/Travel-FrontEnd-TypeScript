@@ -8,7 +8,7 @@ import {
   Box,
   Button,
 } from "@mui/material";
-import { Link } from "react-router-dom"; // Import Link from React Router
+import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -51,21 +51,41 @@ const provinces = [
 
 const Destinations = () => {
   const [isLongPress, setIsLongPress] = useState(false);
-  let timer;
+  let timer: number | undefined;
 
   const settings = {
     dots: true,
-    infinite: false, // Disable infinite loop
+    infinite: true,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
+    arrows: true,
+    nextArrow: (
+      <div
+        style={{
+          right: "10px",
+          zIndex: 1,
+          fontSize: "30px",
+          cursor: "pointer",
+        }}
+      >
+        →
+      </div>
+    ),
+    prevArrow: (
+      <div
+        style={{ left: "10px", zIndex: 1, fontSize: "30px", cursor: "pointer" }}
+      >
+        ←
+      </div>
+    ),
     responsive: [
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
-          infinite: false, // Disable infinite loop
+          infinite: true,
           dots: true,
         },
       },
@@ -74,7 +94,6 @@ const Destinations = () => {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
-          infinite: false, // Disable infinite loop
         },
       },
       {
@@ -82,7 +101,6 @@ const Destinations = () => {
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
-          infinite: false, // Disable infinite loop
         },
       },
     ],
@@ -102,7 +120,7 @@ const Destinations = () => {
     }
   };
 
-  const handleClick = (e) => {
+  const handleClick = (e: { preventDefault: () => void }) => {
     if (isLongPress) {
       e.preventDefault(); // Prevent the default action if it's a long press
       setIsLongPress(false);
@@ -128,11 +146,15 @@ const Destinations = () => {
                   elevation={4}
                   sx={{
                     position: "relative",
-                    backgroundColor: "black",
+                    backgroundColor: "#000",
                     margin: "10px",
-                    padding: "px", // Add padding to the card
-                    borderRadius: "15px", // Add border-radius to the card
-                    overflow: "hidden", // Ensure child elements are clipped to card bounds
+                    borderRadius: "15px",
+                    overflow: "hidden",
+                    transition: "transform 0.3s, box-shadow 0.3s",
+                    "&:hover": {
+                      transform: "scale(1.05)",
+                      boxShadow: "0 10px 20px rgba(0,0,0,0.5)",
+                    },
                   }}
                 >
                   <CardMedia
@@ -140,7 +162,7 @@ const Destinations = () => {
                     sx={{
                       height: 400,
                       objectFit: "cover",
-                      borderRadius: "15px", // Match border-radius to the card
+                      borderRadius: "15px",
                     }}
                     image={province.image}
                     alt={province.name}

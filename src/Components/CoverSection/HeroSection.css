@@ -10,6 +10,7 @@ video {
   background: url("./../../assets/img-home.jpg") center center/cover no-repeat;
   height: 100vh;
   width: 100%;
+  position: relative;
 
   display: flex;
   flex-direction: column;
@@ -19,10 +20,23 @@ video {
   object-fit: contain;
 }
 
+.hero-container::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 300px; /* Adjust height as needed */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  z-index: 1;
+}
+
 .hero-container > h1 {
   color: #fff;
   font-size: 100px;
   margin-top: -100px;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-container > p {
@@ -31,10 +45,14 @@ video {
   font-size: 32px;
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
     "Lucida Sans", Arial, sans-serif;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-btns {
   margin-top: 32px;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-btns .btn {
