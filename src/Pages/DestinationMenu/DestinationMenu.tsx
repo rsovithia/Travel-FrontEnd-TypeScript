@@ -7,14 +7,14 @@ import {
   CardContent,
   Grid,
   Button,
-  Box, // Import Box from Material-UI
+  Box,
 } from "@mui/material";
-import { Link } from "react-router-dom"; // Import Link from React Router
+import { Link } from "react-router-dom";
 
 const provinces = [
   {
     name: "Phnom Penh",
-    description: "The capital city of Cambodia. And have alot place ",
+    description: "The capital city of Cambodia. And have a lot place ",
     image:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Phnom_Penh_Independence_Monument.jpg/800px-Phnom_Penh_Independence_Monument.jpg",
   },
@@ -69,7 +69,7 @@ const Destinations = () => {
               <Card elevation={2}>
                 <CardMedia
                   component="img"
-                  sx={{ height: 200 }} // Maintain 16:9 aspect ratio
+                  sx={{ height: 0, paddingTop: '56.25%' }} // Maintain 16:9 aspect ratio
                   image={province.image} // Use province image
                   alt={province.name}
                 />

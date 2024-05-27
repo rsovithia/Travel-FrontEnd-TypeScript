@@ -99,7 +99,7 @@ const CoverSection: React.FC = () => {
                 background: "rgba(255, 255, 255, 0.2)",
                 borderRadius: "15px",
                 padding: "20px",
-                height: "380px",
+                height: "320px",
                 boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
                 backdropFilter: "blur(5px)",
                 color: "white",
@@ -130,9 +130,9 @@ const CoverSection: React.FC = () => {
               modules={[EffectCoverflow, Pagination]}
               className="mySwiper"
               style={{
-                width: "80%",
-                marginTop: "120px",
-                padding: "10px 100px",
+                width: "400px",
+                marginTop: "140px",
+                padding: "10px 150px",
               }}
               onSlideChange={(swiper) =>
                 setSelectedProvince(provinces[swiper.activeIndex])
@@ -147,29 +147,18 @@ const CoverSection: React.FC = () => {
                     <Box
                       sx={{
                         position: "relative",
-                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+               
                         borderRadius: "15px",
                         overflow: "hidden",
                         transition: "transform 0.3s, box-shadow 0.3s",
-                        transform:
-                          selectedProvince.name === province.name
-                            ? "scale(1.05)"
-                            : "scale(1)",
-                        boxShadow:
-                          selectedProvince.name === province.name
-                            ? "0 10px 20px rgba(0,0,0,0.5)"
-                            : "none",
-                        "&:hover": {
-                          transform: "scale(1.05)",
-                          boxShadow: "0 10px 20px rgba(0,0,0,0.5)",
-                        },
+                        
                       }}
                     >
                       <img
                         src={province.image}
                         alt={province.name}
                         style={{
-                          height: 600,
+                          height: 500,
                           objectFit: "cover",
                           borderRadius: "15px",
                           width: "100%",

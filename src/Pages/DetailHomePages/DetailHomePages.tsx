@@ -3,21 +3,12 @@ import React from "react";
 
 export default function DetailHomePages() {
   return (
-    <Box sx={{ border: "1px solid black" }}>
-      <Box>
-        <Typography variant="h3" gutterBottom align="center">
-          DetailHomePages
-        </Typography>
-        <Typography variant="subtitle2" gutterBottom align="center">
-          Tour gives you the opportunity to see a lot, within a time frame
-        </Typography>
-      </Box>
-
+    <Box>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <Box sx={{ padding: 20, border: "1px solid black" }}>
+          <Box sx={{ padding: 20 }}>
             <Typography variant="h3" gutterBottom align="center">
-              Popular Destinations
+              About The Websites
             </Typography>
             <Typography variant="body1">
               This is some text content for Box1. You can put any text here that
@@ -33,7 +24,6 @@ export default function DetailHomePages() {
               display: "flex",
               justifyContent: "space-around",
               padding: 2,
-              border: "1px solid black",
             }}
           >
             <img
@@ -56,7 +46,6 @@ export default function DetailHomePages() {
               display: "flex",
               justifyContent: "space-around",
               padding: 2,
-              border: "1px solid black",
             }}
           >
             <img
@@ -72,9 +61,9 @@ export default function DetailHomePages() {
           </Box>
         </Grid>
         <Grid item xs={6}>
-          <Box sx={{ padding: 20, border: "1px solid black" }}>
+          <Box sx={{ padding: 20 }}>
             <Typography variant="h3" gutterBottom align="center">
-              Popular Destinations
+              Smart Machine Learning
             </Typography>
             <Typography variant="body1">
               This is some text content for Box1. You can put any text here that
