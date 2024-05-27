@@ -2,7 +2,7 @@
 
 const config = {
   apiUrl: "https://smart-voyage-recommendation.onrender.com/api",
-  fileUrl: "https://smart-voyage-recommendation.onrender.com/",
+  fileUrl: "https://smart-voyage-recommendation.onrender.com/api",
   accessToken: localStorage.getItem("accessToken") || null,
 
   setAccessToken: (token: string | null) => {
