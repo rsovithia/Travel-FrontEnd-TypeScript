@@ -3,7 +3,7 @@ import React from "react";
 
 export default function DetailHomePages() {
   return (
-    <Box>
+    <Box sx={{ bgcolor: "#EDA821" }}>
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <Box sx={{ padding: 20 }}>

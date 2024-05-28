@@ -70,7 +70,7 @@ export default function Home() {
 
       <Box
         sx={{
-          bgcolor: "#EDA821",
+         
           padding: "20px",
           marginTop: "40px",
         }}
@@ -120,14 +120,14 @@ export default function Home() {
                         gutterBottom
                         variant="h5"
                         component="div"
-                        sx={{ color: "#fff" }}
+                   
                       >
                         {recommendation.title}
                       </Typography>
                       <Typography
                         variant="body2"
                         color="text.secondary"
-                        sx={{ color: "#fff" }}
+                   
                       >
                         {recommendation.description}
                       </Typography>
