@@ -27,7 +27,7 @@ const Destinations = () => {
         }}
       >
         <Typography variant="h4">All the Destinations in Cambodia</Typography>
-        <Typography>
+        <Typography sx={{ width: "80%" }}>
           Discover the diverse and beautiful destinations across Cambodia. From
           the bustling streets of Phnom Penh to the serene beaches of
           Sihanoukville, there's something for every traveler to enjoy.
