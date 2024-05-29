@@ -1,28 +1,46 @@
 import React, { useState } from "react";
 import "../Register/Register.css";
-// import Logo from "../../assets/Images/logo_itc.svg";
 import { useNavigate } from "react-router-dom";
-// import { register } from "../../Auth/auth";
+import config from "../../Api/config";
 
 const Register: React.FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async () => {
-    // if (password !== confirmPassword) {
-    //   alert("Passwords do not match");
-    //   return;
-    // }
-    // try {
-    //   const response = await register(name, email, password);
-    //   console.log("Registration successful:", response);
-    //   navigate("/dashboard", { state: { response } });
-    // } catch (error) {
-    //   console.error("Registration failed:", error);
-    // }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+    try {
+      const response = await fetch(`${config.apiUrl}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          password,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Registration successful:", result);
+        navigate("/dashboard", { state: { result } });
+      } else {
+        console.error("Registration failed:", response.status);
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -62,6 +80,15 @@ const Register: React.FC = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <p>Phone Number</p>
+            <input
+              className="input"
+              type="text"
+              placeholder="Phone Number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
             />
 
             <p>Password</p>

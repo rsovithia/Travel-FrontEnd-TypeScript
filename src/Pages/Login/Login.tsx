@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import "./Login.css";
 // import Logo from "../../assets/Images/logo_itc.svg";
 import { useNavigate } from "react-router-dom";
-
-import { authenticate } from "../../Auth/auth";
+import { authenticate, logout } from "../../Auth/auth";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -15,7 +14,12 @@ const Login: React.FC = () => {
       const response = await authenticate(email, password);
       console.log("Login successful:", response);
 
-      navigate("/Calendar");
+      // Navigate based on user role
+      if (response.role === "admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -26,11 +30,10 @@ const Login: React.FC = () => {
     handleLogin();
   };
 
-  // const handleLogout = () => {
-  //   logout();
- 
-  //   navigate("/");
-  // };
+  const handleLogout = () => {
+    logout();
+    navigate("/login"); // Adjust this to your login route
+  };
 
   return (
     <div style={{ backgroundColor: "black" }} className="row">
@@ -68,20 +71,24 @@ const Login: React.FC = () => {
             <button type="submit" className="submit">
               Login
             </button>
-            <div
-                  style={{
-                    height: "40px",
-                    width: "40px",
-                    backgroundColor: "#DF6E1A",
-                    borderRadius: "20px",
-                    border: "1px solid #FFFFFF",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                log out
-                </div>
+            <button
+              type="button"
+              className="logout"
+              onClick={handleLogout}
+              style={{
+                height: "40px",
+                width: "100px",
+                backgroundColor: "#DF6E1A",
+                borderRadius: "20px",
+                border: "1px solid #FFFFFF",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "10px",
+              }}
+            >
+              Logout
+            </button>
           </div>
         </form>
       </div>

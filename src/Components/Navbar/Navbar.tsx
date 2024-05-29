@@ -12,26 +12,37 @@ import {
   Popper,
   Avatar,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
+import config from "../../Api/config";
+import { logout } from "../../Auth/auth";
 
-export default function Navbar() {
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  profilePicture: string;
+  role: string;
+}
+
+const Navbar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 700);
   const [prevScrollPos, setPrevScrollPos] = useState(window.pageYOffset);
   const [visible, setVisible] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
-
-  const user = {
-    name: "Rith",
-    email: "vithiasokh@gmail.com",
-    profilePicture: "/path/to/profile.jpg",
-  };
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const handleResize = () => setIsSmallScreen(window.innerWidth < 700);
@@ -53,17 +64,23 @@ export default function Navbar() {
     };
   }, [prevScrollPos, open]);
 
+  useEffect(() => {
+    const storedUser = {
+      id: localStorage.getItem("id") || "",
+      name: localStorage.getItem("name") || "",
+      email: localStorage.getItem("email") || "",
+      profilePicture: localStorage.getItem("avatar") || "",
+      role: localStorage.getItem("role") || "",
+    };
+
+    if (storedUser.id) {
+      setUser(storedUser);
+    }
+  }, []);
+
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev);
     document.body.style.overflow = menuOpen ? "hidden" : "visible";
-  };
-
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleProfileMenuClose = () => {
-    setAnchorEl(null);
   };
 
   const handleToggle = () => {
@@ -96,6 +113,19 @@ export default function Navbar() {
     prevOpen.current = open;
   }, [open]);
 
+  const handleLogout = () => {
+    logout();
+    window.location.reload();
+  };
+
+  const handleDialogOpen = () => {
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
   const prevOpen = useRef(open);
 
   return (
@@ -124,6 +154,25 @@ export default function Navbar() {
           Travel Logo
         </Typography>
       </Grid>
+      <Grid
+        item
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          gap: "20px",
+          justifyContent: "center",
+        }}
+      >
+        <Button color="inherit" component={Link} to="/">
+          Home
+        </Button>
+        <Button color="inherit" component={Link} to="/destinations">
+          Destinations
+        </Button>
+        <Button color="inherit" component={Link} to="/#">
+          Recommendation
+        </Button>
+      </Grid>
       <Grid item>
         <Box
           sx={{
@@ -133,107 +182,224 @@ export default function Navbar() {
           }}
         >
           {isSmallScreen ? (
-            <>
-              <IconButton color="inherit" onClick={toggleMenu}>
-                {menuOpen ? <CloseIcon /> : <MenuIcon />}
-              </IconButton>
-            </>
+            <IconButton color="inherit" onClick={toggleMenu}>
+              {menuOpen ? <CloseIcon /> : <MenuIcon />}
+            </IconButton>
           ) : (
             <>
-              <Button color="inherit" component={Link} to="/">
-                Home
-              </Button>
-              <Button color="inherit" component={Link} to="/destinations">
-                Destinations
-              </Button>
-              <Button color="inherit" component={Link} to="/#">
-                Recommendation
-              </Button>
-              <Button color="inherit" component={Link} to="/login">
-                Login
-              </Button>
-              <Button
-                ref={anchorRef}
-                aria-controls={open ? "composition-menu" : undefined}
-                aria-expanded={open ? "true" : undefined}
-                aria-haspopup="true"
-                onClick={handleToggle}
-              >
-                Dashboard
-              </Button>
-              <Popper
-                open={open}
-                anchorEl={anchorRef.current}
-                role={undefined}
-                placement="bottom-start"
-                transition
-                disablePortal
-              >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
-                    style={{
-                      transformOrigin:
-                        placement === "bottom-start"
-                          ? "right bottom"
-                          : "center top",
-                    }}
+              {user ? (
+                <>
+                  <IconButton
+                    ref={anchorRef}
+                    aria-controls={open ? "composition-menu" : undefined}
+                    aria-expanded={open ? "true" : undefined}
+                    aria-haspopup="true"
+                    onClick={handleToggle}
                   >
-                    <Paper>
-                      <ClickAwayListener onClickAway={handleClose}>
-                        <MenuList
-                          sx={{ width: "250px" }}
-                          autoFocusItem={open}
-                          id="composition-menu"
-                          aria-labelledby="composition-button"
-                          onKeyDown={handleListKeyDown}
-                        >
-                          <MenuItem>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                padding: "16px",
-                                textAlign: "center",
-                                width: "100%", // Added to center content
-                              }}
+                    <Avatar alt={user.name} src={user.profilePicture} />
+                  </IconButton>
+                  <Popper
+                    open={open}
+                    anchorEl={anchorRef.current}
+                    role={undefined}
+                    placement="bottom-start"
+                    transition
+                    disablePortal
+                  >
+                    {({ TransitionProps, placement }) => (
+                      <Grow
+                        {...TransitionProps}
+                        style={{
+                          transformOrigin:
+                            placement === "bottom-start"
+                              ? "right bottom"
+                              : "right top",
+                        }}
+                      >
+                        <Paper>
+                          <ClickAwayListener onClickAway={handleClose}>
+                            <MenuList
+                              sx={{ width: "260px" }}
+                              autoFocusItem={open}
+                              id="composition-menu"
+                              aria-labelledby="composition-button"
+                              onKeyDown={handleListKeyDown}
                             >
-                              <Avatar
-                                alt={user.name}
-                                src={user.profilePicture}
-                                sx={{ width: 56, height: 56, marginBottom: 1 }}
-                              />
-                              <Typography variant="body1">
-                                {user.name}
-                              </Typography>
-                              <Typography variant="body2" color="textSecondary">
-                                {user.email}
-                              </Typography>
-                            </Box>
-                          </MenuItem>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "row",
-                              alignItems: "center",
-                              padding: "16px",
-                              textAlign: "center",
-                            }}
-                          >
-                            <Button variant="outlined">Delete</Button>
-                            <Button variant="contained">Send</Button>
-                          </Box>
-                        </MenuList>
-                      </ClickAwayListener>
-                    </Paper>
-                  </Grow>
-                )}
-              </Popper>
+                              <MenuItem>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    padding: "16px",
+                                    textAlign: "center",
+                                    width: "100%",
+                                  }}
+                                >
+                                  <Avatar
+                                    alt={user.name}
+                                    src={user.profilePicture}
+                                    sx={{
+                                      width: 56,
+                                      height: 56,
+                                      marginBottom: 1,
+                                    }}
+                                  />
+                                  <Typography variant="body1">
+                                    {user.name}
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                  >
+                                    {user.email}
+                                  </Typography>
+                                  <Typography
+                                    variant="body2"
+                                    color="textSecondary"
+                                  >
+                                    {user.role}
+                                  </Typography>
+                                </Box>
+                              </MenuItem>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  padding: "16px",
+                                  textAlign: "center",
+                                  marginLeft: "20px", // Add this line to move the buttons to the right
+                                }}
+                              >
+                                {user.role === "admin" ? (
+                                  <>
+                                    <Button
+                                      component={Link}
+                                      to="/dashboard"
+                                      sx={{
+                                        width: "100px",
+                                        backgroundColor: "#DF6E1A",
+                                        borderRadius: "20px 0 0 20px",
+                                        color: "black",
+                                        fontWeight: "600",
+                                        border: "1px solid #FFFFFF",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      Dashboard
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      className="logout"
+                                      onClick={handleLogout}
+                                      sx={{
+                                        width: "100px",
+                                        backgroundColor: "#DF6E1A",
+                                        borderRadius: "0 20px 20px 0",
+                                        color: "black",
+                                        fontWeight: "600",
+                                        border: "1px solid #FFFFFF",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      Logout
+                                    </Button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Button
+                                      sx={{
+                                        width: "100px",
+                                        backgroundColor: "#DF6E1A",
+                                        borderRadius: "20px 0 0 20px",
+                                        color: "black",
+                                        fontWeight: "600",
+                                        border: "1px solid #FFFFFF",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                      onClick={handleDialogOpen}
+                                    >
+                                      Post
+                                    </Button>
+                                    <Button
+                                      type="button"
+                                      className="logout"
+                                      onClick={handleLogout}
+                                      sx={{
+                                        width: "100px",
+                                        backgroundColor: "#DF6E1A",
+                                        borderRadius: "0 20px 20px 0",
+                                        color: "black",
+                                        fontWeight: "600",
+                                        border: "1px solid #FFFFFF",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                      }}
+                                    >
+                                      Logout
+                                    </Button>
+                                  </>
+                                )}
+                              </Box>
+                            </MenuList>
+                          </ClickAwayListener>
+                        </Paper>
+                      </Grow>
+                    )}
+                  </Popper>
+                </>
+              ) : (
+                <>
+                  <Button color="inherit" component={Link} to="/login">
+                    Login
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="inherit"
+                    component={Link}
+                    to="/register"
+                  >
+                    Register
+                  </Button>
+                </>
+              )}
             </>
           )}
         </Box>
       </Grid>
+      <Dialog
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Let Google help apps determine location. This means sending
+            anonymous location data to Google, even when no apps are running.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>Disagree</Button>
+          <Button onClick={handleDialogClose} autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
-}
+};
+
+export default Navbar;

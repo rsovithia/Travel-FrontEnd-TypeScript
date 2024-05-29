@@ -1,8 +1,8 @@
-import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
+// App.tsx
 
+import { Route, Routes, BrowserRouter, Navigate } from "react-router-dom";
 import Layout from "./Components/Layout/Layout";
-import { isAuthenticated } from "./Auth/auth";
-// import { Home, Login, Dashboard, Category } from "@mui/icons-material";
+import { isAuthenticated, isAdmin } from "./Auth/auth";
 import Navbar from "./Components/Navbar/Navbar";
 
 import Home from "./Pages/Home/Home";
@@ -14,6 +14,7 @@ import Category from "./Pages/Admin/Category/Category";
 import Destinations from "./Pages/Admin/Destination/Destination";
 import Profile from "./Pages/Admin/Profile/Profile";
 import AddUser from "./Pages/Admin/AddUser/AddUser";
+import Register from "./Pages/Register/Register";
 
 function App() {
   return (
@@ -38,7 +39,7 @@ function App() {
               </>
             }
           />
-              <Route
+          <Route
             path="/DestinationDetails"
             element={
               <>
@@ -50,13 +51,17 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/Destinations" element={<DestinationMenu />} />
           <Route path="/DestinationDetails" element={<DestinationDetails />} />
-
           <Route path="/login" element={<Login />} />
+          <Route path="/Register" element={<Register />} />
           <Route element={<Layout />}>
             <Route
               path="/dashboard"
               element={
-                isAuthenticated() ? <Destinations /> : <Navigate to="/" />
+                isAuthenticated() && isAdmin() ? (
+                  <Destinations />
+                ) : (
+                  <Navigate to="/" />
+                )
               }
             />
             <Route path="/profile" element={<Profile />} />
