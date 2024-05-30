@@ -186,23 +186,8 @@ const AdminTable: React.FC = () => {
     }
   };
 
-  const handleViewDetails = async (id: number) => {
-    try {
-      const response = await fetch(`${config.apiUrl}/admin/destination/${id}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${config.accessToken}`,
-        },
-      });
-      if (response.ok) {
-        const result = await response.json();
-        navigate("/DestinationDetails", { state: { result } });
-      } else {
-        console.error("Failed to fetch destination:", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching destination:", error);
-    }
+  const handleViewDetails = (id: number) => {
+    navigate(`/destination/${id}`);
   };
 
   const handleChange = (

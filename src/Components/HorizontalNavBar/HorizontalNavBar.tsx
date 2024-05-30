@@ -6,7 +6,7 @@ export default function Header() {
   const navigate = useNavigate();
 
   return (
-    <Box>
+    <Box sx={{ margin:"20px"} }>
       <Box
         sx={{
           bgcolor: "#df6e1a",
@@ -16,11 +16,8 @@ export default function Header() {
       >
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Travel Der Leng Dashboard
+            Dashboard
           </Typography>
-          <IconButton onClick={() => navigate("/")}>
-            <HomeIcon />
-          </IconButton>
         </Toolbar>
       </Box>
     </Box>

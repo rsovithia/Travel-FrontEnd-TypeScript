@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "../Register/Register.css";
 import { useNavigate } from "react-router-dom";
 import config from "../../Api/config";
+import { Typography } from "@mui/material";
+import { authenticate } from "../../Auth/auth";
 
 const Register: React.FC = () => {
   const [name, setName] = useState("");
@@ -34,7 +36,17 @@ const Register: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         console.log("Registration successful:", result);
-        navigate("/dashboard", { state: { result } });
+
+        // Automatically log in the user after successful registration
+        const loginResponse = await authenticate(email, password);
+        console.log("Login successful:", loginResponse);
+
+        // Navigate based on user role
+        if (loginResponse.role === "admin") {
+          navigate("/dashboard");
+        } else {
+          navigate("/");
+        }
       } else {
         console.error("Registration failed:", response.status);
       }
@@ -52,62 +64,66 @@ const Register: React.FC = () => {
     <div style={{ backgroundColor: "black" }} className="row">
       <div className="register">
         <div className="header">
-          {/* <img
-            className="picture"
-            style={{ width: "230px", height: "165px" }}
-            src={Logo}
-            alt="Logo"
-          /> */}
           <h1 className="welcome">ADMIN PANEL</h1>
           <p className="detail">Control Panel Registration</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="inputs">
-            <p>Name</p>
-            <input
-              className="input"
-              type="text"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <div className="input-group">
+              <Typography className="label">Name</Typography>
+              <input
+                className="input"
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
 
-            <p>Email</p>
-            <input
-              className="input"
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <div className="input-group">
+              <Typography className="label">Email</Typography>
+              <input
+                className="input"
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
 
-            <p>Phone Number</p>
-            <input
-              className="input"
-              type="text"
-              placeholder="Phone Number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
+            <div className="input-group">
+              <Typography className="label">Phone Number</Typography>
+              <input
+                className="input"
+                type="text"
+                placeholder="Phone Number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
 
-            <p>Password</p>
-            <input
-              className="input"
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="input-group">
+              <Typography className="label">Password</Typography>
+              <input
+                className="input"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
 
-            <p>Confirm Password</p>
-            <input
-              className="input"
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+            <div className="input-group">
+              <Typography className="label">Confirm Password</Typography>
+              <input
+                className="input"
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
 
             <button type="submit" className="submit">
               Register

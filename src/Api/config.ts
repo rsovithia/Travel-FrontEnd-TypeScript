@@ -1,9 +1,10 @@
 // config.js
 
 const config = {
-  apiUrl: "https://smart-voyage-recommendation.onrender.com/api",
-  fileUrl: "https://smart-voyage-recommendation.onrender.com/api",
+  apiUrl: "http://127.0.0.1:8000/api",
   accessToken: localStorage.getItem("accessToken") || null,
+
+  
 
   setAccessToken: (token: string | null) => {
     config.accessToken = token;
@@ -14,6 +15,7 @@ const config = {
       console.log(config.apiUrl);
     }
   },
+  
 };
 
 export default config;

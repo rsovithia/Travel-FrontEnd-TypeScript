@@ -225,7 +225,7 @@ const Navbar: React.FC = () => {
                               aria-labelledby="composition-button"
                               onKeyDown={handleListKeyDown}
                             >
-                              <MenuItem>
+                              <Box>
                                 <Box
                                   sx={{
                                     display: "flex",
@@ -233,7 +233,6 @@ const Navbar: React.FC = () => {
                                     alignItems: "center",
                                     padding: "16px",
                                     textAlign: "center",
-                                    width: "100%",
                                   }}
                                 >
                                   <Avatar
@@ -245,32 +244,51 @@ const Navbar: React.FC = () => {
                                       marginBottom: 1,
                                     }}
                                   />
-                                  <Typography variant="body1">
+                                  <Typography
+                                    fontSize={"20px"}
+                                    fontWeight={600}
+                                    variant="body1"
+                                  >
                                     {user.name}
                                   </Typography>
                                   <Typography
+                                    fontSize={"14px"}
                                     variant="body2"
                                     color="textSecondary"
                                   >
                                     {user.email}
                                   </Typography>
-                                  <Typography
-                                    variant="body2"
-                                    color="textSecondary"
+
+                                  <Button
+                                    variant="outlined"
+                                    sx={{
+                                      mt: 2,
+                                      width: "64%",
+                                      fontWeight: "bold",
+                                      fontSize: "14px",
+                                      color: "#DF6E1A",
+                                      textTransform: "none",
+                                      borderColor: "#DF6E1A",
+                                      "&:hover": {
+                                        borderColor: "#DF6E1A",
+                                      },
+                                    }}
+                                    component={Link}
+                                    to="/userpages "
                                   >
-                                    {user.role}
-                                  </Typography>
+                                    View Profile
+                                  </Button>
                                 </Box>
-                              </MenuItem>
+                              </Box>
                               <Box
                                 sx={{
                                   display: "flex",
                                   flexDirection: "row",
                                   justifyContent: "center",
                                   alignItems: "center",
-                                  padding: "16px",
+                                  paddingBottom: "10px",
+
                                   textAlign: "center",
-                                  marginLeft: "20px", // Add this line to move the buttons to the right
                                 }}
                               >
                                 {user.role === "admin" ? (

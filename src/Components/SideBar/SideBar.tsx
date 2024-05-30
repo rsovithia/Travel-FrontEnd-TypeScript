@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Box,
   List,
@@ -7,8 +8,9 @@ import {
   Divider,
   Avatar,
   Typography,
+  IconButton,
 } from "@mui/material";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { Link, useNavigate } from "react-router-dom";
 import {
   Dashboard as DashboardIcon,
   AccountCircle as AccountCircleIcon,
@@ -16,14 +18,31 @@ import {
   InsertPhoto,
 } from "@mui/icons-material";
 
-const mockUser = {
-  name: "John Doe",
-  email: "johndoe@example.com",
-  location: "New York, USA",
-  profilePicture: "https://via.placeholder.com/150",
-};
+import HomeIcon from "@mui/icons-material/Home";
 
-export default function SideBar() {
+const SideBar = () => {
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    location: "", // Including the location property
+    profilePicture: "",
+    role: "",
+  });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = {
+      name: localStorage.getItem("name") || "John Doe",
+      email: localStorage.getItem("email") || "johndoe@example.com",
+      location: localStorage.getItem("location") || "", // Retrieve location from localStorage
+      profilePicture:
+        localStorage.getItem("avatar") || "https://via.placeholder.com/150",
+      role: localStorage.getItem("role") || "user",
+    };
+    setUser(storedUser);
+  }, []);
+
   return (
     <>
       <Box
@@ -33,18 +52,22 @@ export default function SideBar() {
           alignItems: "center",
           justifyContent: "center",
           bgcolor: "#df6e1a",
-          padding: "25px",
+          padding: "20px",
         }}
       >
         <Avatar
           alt="Profile Picture"
-          src={mockUser.profilePicture}
+          src={user.profilePicture}
           sx={{ width: 150, height: 150 }}
         />
         <Typography variant="h4" gutterBottom>
-          {mockUser.name}
+          {user.name}
         </Typography>
+        <IconButton onClick={() => navigate("/")}>
+          <HomeIcon />
+        </IconButton>
       </Box>
+
       <Box
         sx={{
           width: "240px",
@@ -56,8 +79,6 @@ export default function SideBar() {
       >
         <List>
           <ListItem component={Link} to="/dashboard">
-            {" "}
-            {/* Use Link component from react-router-dom */}
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
@@ -65,27 +86,25 @@ export default function SideBar() {
             <ListItemText />
           </ListItem>
           <ListItem component={Link} to="/Category">
-            {" "}
             <ListItemIcon>
               <InsertPhoto />
             </ListItemIcon>
             <Typography>Category</Typography>
             <ListItemText />
           </ListItem>
-          <ListItem component={Link} to="/AddUser">
-            {" "}
-            <ListItemIcon>
-              <PersonAdd />
-            </ListItemIcon>
-            <Typography>Add User</Typography>
-            <ListItemText />
-          </ListItem>
+          {user.role === "admin" && (
+            <ListItem component={Link} to="/AddUser">
+              <ListItemIcon>
+                <PersonAdd />
+              </ListItemIcon>
+              <Typography>Add User</Typography>
+              <ListItemText />
+            </ListItem>
+          )}
         </List>
         <Divider />
         <List>
           <ListItem component={Link} to="/Profile">
-            {" "}
-            {/* Use Link component from react-router-dom */}
             <ListItemIcon>
               <AccountCircleIcon />
             </ListItemIcon>
@@ -96,4 +115,6 @@ export default function SideBar() {
       </Box>
     </>
   );
-}
+};
+
+export default SideBar;

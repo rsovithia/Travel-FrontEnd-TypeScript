@@ -1,99 +1,117 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
   Card,
   CardMedia,
-  CardContent,
   Grid,
-  Button,
   Box,
 } from "@mui/material";
 import { Link } from "react-router-dom";
+import config from "../../Api/config";
 
-const provinces = [
-  {
-    name: "Phnom Penh",
-    description: "The capital city of Cambodia. And have a lot place ",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Phnom_Penh_Independence_Monument.jpg/800px-Phnom_Penh_Independence_Monument.jpg",
-  },
-  {
-    name: "Siem Reap",
-    description: "Famous for the Angkor Wat temple complex.",
-    image:
-      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/33/fc/e0/siem-reap.jpg?w=1400&h=1400&s=1",
-  },
-  {
-    name: "Sihanoukville",
-    description: "Known for its beaches and nightlife.",
-    image:
-      "https://media.istockphoto.com/id/514263434/photo/quiet-empty-paradise-beach-in-koh-rong-near-sihanoukville-cambodia.jpg?s=612x612&w=0&k=20&c=H9n0e9ldKM7XyZqwJ4e7VfTwbOkUne8z2nSWGwEf-9A=",
-  },
-  {
-    name: "Koh Rong",
-    description:
-      "An island known for its stunning beaches and vibrant nightlife, located near Sihanoukville.",
-    image:
-      "https://lp-cms-production.imgix.net/2019-06/474416112_super.jpg?fit=crop&q=40&sharp=10&vib=20&auto=format&ixlib=react-8.6.4",
-  },
-  // Add more provinces as needed
-];
+interface Province {
+  id: number;
+  name: string;
+  image: string;
+}
 
-const Destinations = () => {
+interface ApiResponse {
+  status: string;
+  data: {
+    id: number;
+    name: string;
+    image1: string;
+    description: string;
+  }[];
+}
+
+const Destinations: React.FC = () => {
+  const [provinces, setProvinces] = useState<Province[]>([]);
+
+  const getData = async () => {
+    try {
+      const response = await fetch(`${config.apiUrl}/admin/destination/all`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
+      const result: ApiResponse = await response.json();
+      console.log("API Response Data:", result);
+      const formattedProvinces = result.data.map((item) => ({
+        id: item.id,
+        name: item.name,
+        image: `${config.apiUrl}/${item.image1}`,
+      }));
+      setProvinces(formattedProvinces);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <>
       <Box sx={{ width: "100%", overflow: "hidden" }}>
         <Card elevation={2} sx={{ borderRadius: 0 }}>
           <CardMedia
             component="img"
-            height="500"
-            image="https://lp-cms-production.imgix.net/2019-06/474416112_super.jpg?fit=crop&q=40&sharp=10&vib=20&auto=format&ixlib=react-8.6.4" // Replace with your cover image URL
+            height="400"
+            image="https://lp-cms-production.imgix.net/2023-11/GettyImages-1469688108.jpg?auto=format&w=1440&h=810&fit=crop&q=75" // Replace with your cover image URL
             alt="Cover Image"
             sx={{ width: "100vw", marginLeft: "calc(-50vw + 50%)" }} // Make image full width
           />
+          <Typography
+            sx={{ padding: "20px" }}
+            variant="h2"
+            align="center"
+            bgcolor={"#CB9027"}
+            gutterBottom
+          >
+            Destinations in Cambodia
+          </Typography>
         </Card>
       </Box>
       <Container maxWidth="lg">
-        <Typography
-          sx={{ paddingTop: "20px" }}
-          variant="h2"
-          align="center"
-          gutterBottom
-        >
-          Destinations in Cambodia
-        </Typography>
         <Grid container spacing={3}>
           {provinces.map((province, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
-              <Card elevation={2}>
-                <CardMedia
-                  component="img"
-                  sx={{ height: 0, paddingTop: '56.25%' }} // Maintain 16:9 aspect ratio
-                  image={province.image} // Use province image
-                  alt={province.name}
-                />
-                <CardContent
-                  sx={{
-                    overflow: "auto",
-                  }}
-                >
-                  <Typography variant="h5" gutterBottom>
-                    {province.name}
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    {province.description}
-                  </Typography>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    component={Link} // Use Link component from React Router
-                    to={`/DestinationDetails`} // Navigate to /DestinationDetails
+              <Link to={`/destination/${province.id}`} style={{ textDecoration: 'none' }}>
+                <Card elevation={2} sx={{ position: "relative" }}>
+                  <CardMedia
+                    component="img"
+                    sx={{ height: 300 }} // Maintain 16:9 aspect ratio
+                    image={province.image} // Use province image
+                    alt={province.name}
+                  />
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "90%",
+                      height: "100%",
+                      background:
+                        "linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0))",
+                      color: "white",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "flex-end",
+                      alignItems: "center",
+                      textShadow: "2px 2px 4px rgba(0, 0, 0, 0.6)",
+                      padding: "16px",
+                    }}
                   >
-                    Learn More
-                  </Button>
-                </CardContent>
-              </Card>
+                    <Typography variant="h5" gutterBottom>
+                      {province.name}
+                    </Typography>
+                  </Box>
+                </Card>
+              </Link>
             </Grid>
           ))}
         </Grid>

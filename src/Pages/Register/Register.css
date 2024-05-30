@@ -1,10 +1,10 @@
 .row {
   display: flex;
   height: 100vh;
+
   background-size: cover;
   background-position: center;
 }
-
 .register {
   display: flex;
   flex-direction: column;
@@ -13,9 +13,8 @@
   background: #2222223b;
   border-radius: 14px;
   margin: auto;
-  position: relative;
+  position: relative; /* Add relative positioning to the .register container */
 }
-
 .register::before {
   content: "register";
   position: absolute;
@@ -25,7 +24,8 @@
   bottom: 0;
   border-radius: 14px;
   border: 1px solid transparent;
-  background: linear-gradient(180deg, rgb(255, 255, 255), transparent) border-box;
+  background: linear-gradient(180deg, rgb(255, 255, 255), transparent)
+    border-box;
   -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
   mask-composite: exclude;
@@ -37,30 +37,72 @@
 }
 
 .header {
- 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  color: #ffffff;
+  padding-top: 50px;
 }
 
 .inputs {
- 
-}
-
-.label {
- 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 25px;
+  padding-top: 25px;
 }
 
 .input {
- 
+  width: 407px;
+  height: 43px;
+
+  color: #ffffff;
+
+  border: 1px solid;
+  border-radius: 5px;
+
+  padding-left: 13px;
+
+  font-size: 16px;
 }
 
 .submit {
- 
+  display: flex;
+  width: 420px;
+  height: 47px;
+  justify-content: center;
+  align-items: center;
+  border: #df6e1a;
+
+  color: #ffffff;
+  background-color: #df6e1a;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  gap: 24px;
+
+  margin-top: 35px;
+  cursor: pointer;
 }
 
+p.label {
+  color: #ffffff;
+  margin-right: 300px;
+  margin-top: 2px;
+}
+
+p.label2 {
+  color: #ffffff;
+  margin-right: 300px;
+  margin-top: 25px;
+}
 .detail {
   font-size: 16px;
   color: #ffffff;
 }
-
 .welcome {
   color: #ffffff;
 }
@@ -69,14 +111,17 @@
   .input {
     width: auto;
     height: 43px;
+
     background-color: transparent;
     color: #ffffff;
+
     border: 1px solid;
     border-radius: 5px;
+
     padding-left: 13px;
+
     font-size: 16px;
   }
-
   .submit {
     display: flex;
     width: 180px;
@@ -84,6 +129,7 @@
     justify-content: center;
     align-items: center;
     border: #df6e1a;
+
     color: #ffffff;
     background-color: #df6e1a;
     border-radius: 5px;
@@ -91,15 +137,14 @@
     font-size: 18px;
     font-family: Arial, Helvetica, sans-serif;
     gap: 24px;
+
     margin-top: 35px;
     cursor: pointer;
   }
-
   .register {
     width: 340px;
   }
-
-  .label {
+  p.label {
     color: aliceblue;
     margin-right: 150px;
     margin-top: 25px;
