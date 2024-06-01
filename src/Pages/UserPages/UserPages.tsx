@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { logout } from "../../Auth/auth";
+import config from "../../Api/config";
 
 interface User {
   id: string;
@@ -33,10 +34,70 @@ interface User {
   role: string;
 }
 
+interface Post {
+  id: number;
+  name: string;
+  description: string;
+  status: string;
+  category: {
+    name: string;
+  };
+  province: {
+    name: string;
+  };
+  created_at: string;
+}
+
+const getPostsByUser = async () => {
+  try {
+    const response = await fetch(`${config.apiUrl}/auth/my-posts`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${config.accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return [];
+  }
+};
+
+const getFavoritesByUser = async () => {
+  try {
+    const response = await fetch(`${config.apiUrl}/auth/my-favorites`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${config.accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    console.log("Fetched favorites:", data); // Console the fetched favorites data here
+    return data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return [];
+  }
+};
+
 const Navbar: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showTable, setShowTable] = useState(true);
   const [user, setUser] = useState<User | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [favorites, setFavorites] = useState<Post[]>([]);
 
   useEffect(() => {
     const storedUser: User = {
@@ -50,6 +111,15 @@ const Navbar: React.FC = () => {
     if (storedUser.id) {
       setUser(storedUser);
     }
+
+    // Fetch posts by user
+    getPostsByUser().then((data) => setPosts(data.data));
+
+    // Fetch favorites by user and log the result
+    getFavoritesByUser().then((data) => {
+      console.log("Favorites data:", data.data);
+      setFavorites(data.data);
+    });
   }, []);
 
   const handleLogout = () => {
@@ -64,22 +134,6 @@ const Navbar: React.FC = () => {
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
-
-  const createData = (
-    name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number
-  ) => ({ name, calories, fat, carbs, protein });
-
-  const rows = [
-    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-    createData("Eclair", 262, 16.0, 24, 6.0),
-    createData("Cupcake", 305, 3.7, 67, 4.3),
-    createData("Gingerbread", 356, 16.0, 49, 3.9),
-  ];
 
   return (
     <Container sx={{ marginTop: 15 }}>
@@ -197,7 +251,6 @@ const Navbar: React.FC = () => {
       </Box>
       <Box sx={{ display: "flex", justifyContent: "left", marginBottom: 2 }}>
         <Button
- 
           sx={{
             textDecoration: showTable ? "underline" : "none",
             marginRight: 2,
@@ -221,52 +274,57 @@ const Navbar: React.FC = () => {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Dessert (100g serving)</TableCell>
-                  <TableCell align="right">Calories</TableCell>
-                  <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                  <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                  <TableCell align="right">Protein&nbsp;(g)</TableCell>
+                  <TableCell>ID</TableCell>
+                  <TableCell align="right">Name</TableCell>
+                  <TableCell align="right">Description</TableCell>
+                  <TableCell align="right">Category</TableCell>
+                  <TableCell align="right">Province</TableCell>
+                  <TableCell align="right">Created At</TableCell>
+                  <TableCell align="right">Status</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
+                {posts.map((post) => (
                   <TableRow
-                    key={row.name}
+                    key={post.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      {row.name}
+                      {post.id}
                     </TableCell>
-                    <TableCell align="right">{row.calories}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right">{row.protein}</TableCell>
+                    <TableCell align="right">{post.name}</TableCell>
+                    <TableCell align="right">{post.description}</TableCell>
+                    <TableCell align="right">{post.category.name}</TableCell>
+                    <TableCell align="right">{post.province.name}</TableCell>
+                    <TableCell align="right">{post.created_at}</TableCell>
+                    <TableCell align="right">{post.status}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
         ) : (
-          <Card sx={{ maxWidth: 345 }}>
-            <CardMedia
-              sx={{ height: 140 }}
-              image="/static/images/cards/contemplative-reptile.jpg"
-              title="green iguana"
-            />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                Lizard
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Lizards are a widespread group of squamate reptiles, with over
-                6,000 species, ranging across all continents except Antarctica.
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small">Share</Button>
-              <Button size="small">Learn More</Button>
-            </CardActions>
-          </Card>
+          favorites.map((favorite) => (
+            <Card key={favorite.id} sx={{ maxWidth: 345, marginBottom: 2 }}>
+              <CardMedia
+                sx={{ height: 140 }}
+                image="/static/images/cards/contemplative-reptile.jpg"
+                title={favorite.name}
+              />
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {favorite.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {favorite.description}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button size="small">Share</Button>
+                <Button size="small">Learn More</Button>
+              </CardActions>
+            </Card>
+          ))
         )}
       </Box>
       <Dialog open={dialogOpen} onClose={handleDialogClose}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, ChangeEvent } from "react";
 import {
   Grid,
   Typography,
@@ -17,9 +17,12 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  TextField,
+  Input,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
+import CheckIcon from "@mui/icons-material/Check";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 import config from "../../Api/config";
@@ -33,6 +36,21 @@ interface User {
   role: string;
 }
 
+interface Destination {
+  id?: number;
+  name: string;
+  description: string;
+  province_id: number;
+  category_id: string;
+  lat: string;
+  long: string;
+  image1: string | null;
+  image2: string | null;
+  image3: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 const Navbar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 700);
@@ -43,6 +61,27 @@ const Navbar: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
   const [user, setUser] = useState<User | null>(null);
+
+  const [openCreateDialog, setOpenCreateDialog] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [newDestination, setNewDestination] = useState<Destination>({
+    name: "",
+    description: "",
+    province_id: 0,
+    category_id: "",
+    lat: "",
+    long: "",
+    image1: "",
+    image2: "",
+    image3: "",
+    created_at: "",
+    updated_at: "",
+  });
+  const [imageInputsFilled, setImageInputsFilled] = useState<boolean[]>([
+    false,
+    false,
+    false,
+  ]);
 
   useEffect(() => {
     const handleResize = () => setIsSmallScreen(window.innerWidth < 700);
@@ -77,6 +116,29 @@ const Navbar: React.FC = () => {
       setUser(storedUser);
     }
   }, []);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${config.apiUrl}/admin/category`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
+      if (response.ok) {
+        const category = await response.json();
+        setCategories(category.data);
+      } else {
+        console.error("Failed to fetch categories:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev);
@@ -126,6 +188,65 @@ const Navbar: React.FC = () => {
     setDialogOpen(false);
   };
 
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setNewDestination((prevDestination) => ({
+      ...prevDestination,
+      [name]: value,
+    }));
+  };
+
+  const handleImageChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    imageField: keyof Destination,
+    index: number
+  ) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewDestination((prevDestination) => ({
+          ...prevDestination,
+          [imageField]: reader.result as string,
+        }));
+        setImageInputsFilled((prevFilled) => {
+          const filledCopy = [...prevFilled];
+          filledCopy[index] = true;
+          return filledCopy;
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = async () => {
+    const method = newDestination.id ? "PUT" : "POST";
+    const url = newDestination.id
+      ? `${config.apiUrl}/admin/destination/${newDestination.id}`
+      : `${config.apiUrl}/admin/destination/add`;
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+        body: JSON.stringify(newDestination),
+      });
+      if (response.ok) {
+        // Handle successful save
+        setOpenCreateDialog(false);
+      } else {
+        console.error("Failed to save destination:", response.status);
+      }
+    } catch (error) {
+      console.error("Error saving destination:", error);
+    }
+  };
+
   const prevOpen = useRef(open);
 
   return (
@@ -171,6 +292,22 @@ const Navbar: React.FC = () => {
         </Button>
         <Button color="inherit" component={Link} to="/#">
           Recommendation
+        </Button>
+        <Button
+          sx={{
+            width: "100px",
+            backgroundColor: "#DF6E1A",
+            borderRadius: "20px 0 0 20px",
+            color: "black",
+            fontWeight: "600",
+            border: "1px solid #FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={() => setOpenCreateDialog(true)}
+        >
+          Post
         </Button>
       </Grid>
       <Grid item>
@@ -343,7 +480,7 @@ const Navbar: React.FC = () => {
                                         alignItems: "center",
                                         justifyContent: "center",
                                       }}
-                                      onClick={handleDialogOpen}
+                                      onClick={() => setOpenCreateDialog(true)}
                                     >
                                       Post
                                     </Button>
@@ -413,6 +550,147 @@ const Navbar: React.FC = () => {
           <Button onClick={handleDialogClose}>Disagree</Button>
           <Button onClick={handleDialogClose} autoFocus>
             Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={openCreateDialog}
+        onClose={() => setOpenCreateDialog(false)}
+      >
+        <DialogTitle>
+          {newDestination.id ? "Edit Destination" : "Add New Destination 2"}
+        </DialogTitle>
+        <DialogContent>
+          <form>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  name="name"
+                  label="Name"
+                  type="text"
+                  fullWidth
+                  value={newDestination.name}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  margin="dense"
+                  id="province_id"
+                  name="province_id"
+                  label="Province ID"
+                  type="number"
+                  fullWidth
+                  value={newDestination.province_id}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  select
+                  margin="dense"
+                  id="category_id"
+                  name="category_id"
+                  label="Category"
+                  fullWidth
+                  value={newDestination.category_id}
+                  onChange={handleChange}
+                >
+                  {categories.map((item) => (
+                    <MenuItem key={item.id} value={item.id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  margin="dense"
+                  id="description"
+                  name="description"
+                  label="Description"
+                  type="text"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  value={newDestination.description}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  margin="dense"
+                  id="lat"
+                  name="lat"
+                  label="Latitude"
+                  type="text"
+                  fullWidth
+                  value={newDestination.lat}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  margin="dense"
+                  id="long"
+                  name="long"
+                  label="Longitude"
+                  type="text"
+                  fullWidth
+                  value={newDestination.long}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Upload Images
+                </Typography>
+              </Grid>
+              {[1, 2, 3].map((index) => (
+                <Grid item xs={12} sm={4} key={`image${index}`}>
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    htmlFor={`image${index}`}
+                    style={{
+                      width: "100%",
+                      minHeight: "100px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Choose Image {index}
+                    <Input
+                      type="file"
+                      id={`image${index}`}
+                      inputProps={{ accept: "image/*" }}
+                      style={{ display: "none" }}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleImageChange(
+                          e,
+                          `image${index}` as keyof Destination,
+                          index - 1
+                        )
+                      }
+                    />
+                  </Button>
+                  {imageInputsFilled[index - 1] && (
+                    <CheckIcon style={{ color: "green" }} />
+                  )}
+                </Grid>
+              ))}
+            </Grid>
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenCreateDialog(false)}>Cancel</Button>
+          <Button onClick={handleSave} color="primary" variant="contained">
+            {newDestination.id ? "Update" : "Add"}
           </Button>
         </DialogActions>
       </Dialog>

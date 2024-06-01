@@ -48,9 +48,7 @@ const AdminTable: React.FC = () => {
   const [data, setData] = useState<Destination[]>([]);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [categories, setCategories] = useState([]);
-  const [selectedDestinationId, setSelectedDestinationId] = useState<
-    number | null
-  >(null);
+  const [selectedDestinationId, setSelectedDestinationId] = useState<number | null>(null);
   const [newDestination, setNewDestination] = useState<Destination>({
     name: "",
     description: "",
@@ -64,11 +62,7 @@ const AdminTable: React.FC = () => {
     created_at: "",
     updated_at: "",
   });
-  const [imageInputsFilled, setImageInputsFilled] = useState<boolean[]>([
-    false,
-    false,
-    false,
-  ]);
+  const [imageInputsFilled, setImageInputsFilled] = useState<boolean[]>([false, false, false]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   const fileUrl = config.fileUrl;
@@ -81,7 +75,7 @@ const AdminTable: React.FC = () => {
 
   const getData = async () => {
     try {
-      const response = await fetch(`${config.apiUrl}/admin/destination/all`, {
+      const response = await fetch(`${config.apiUrl}/destination`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${config.accessToken}`,
@@ -165,9 +159,7 @@ const AdminTable: React.FC = () => {
   };
 
   const handleRemoveDestination = async (id: number) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this destination?"
-    );
+    const confirmed = window.confirm("Are you sure you want to delete this destination?");
     if (!confirmed) return;
     try {
       const response = await fetch(`${config.apiUrl}/admin/destination/${id}`, {
@@ -190,9 +182,7 @@ const AdminTable: React.FC = () => {
     navigate(`/destination/${id}`);
   };
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setNewDestination((prevDestination) => ({
       ...prevDestination,
@@ -200,11 +190,7 @@ const AdminTable: React.FC = () => {
     }));
   };
 
-  const handleImageChange = (
-    e: ChangeEvent<HTMLInputElement>,
-    imageField: keyof Destination,
-    index: number
-  ) => {
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>, imageField: keyof Destination, index: number) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -250,17 +236,14 @@ const AdminTable: React.FC = () => {
 
   const handleUpdateDestination = async () => {
     try {
-      const response = await fetch(
-        `${config.apiUrl}/admin/destination/${selectedDestinationId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${config.accessToken}`,
-          },
-          body: JSON.stringify(newDestination),
-        }
-      );
+      const response = await fetch(`${config.apiUrl}/admin/destination/${selectedDestinationId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+        body: JSON.stringify(newDestination),
+      });
       if (response.ok) {
         getData();
         handleCloseDialog();
@@ -401,10 +384,10 @@ const AdminTable: React.FC = () => {
                       {row.description}
                     </StyledTableCell>
                     <StyledTableCell>
-                      {row.province ? row.province.name : ""}
+                      {row.province_id}
                     </StyledTableCell>
                     <StyledTableCell>
-                      {row.category ? row.category.name : ""}
+                      {row.category_id}
                     </StyledTableCell>
                     <StyledTableCell>
                       {row.lat}, {row.long}
@@ -416,21 +399,13 @@ const AdminTable: React.FC = () => {
                       {new Date(row.updated_at).toLocaleDateString()}
                     </StyledTableCell>
                     <StyledTableCell>
-                      <Button
-                        onClick={() => row.id && handleViewDetails(row.id)}
-                      >
+                      <Button onClick={() => row.id && handleViewDetails(row.id)}>
                         <PreviewIcon sx={{ color: "black" }} />
                       </Button>
-                      <Button
-                        onClick={() => row.id && handleEditDestination(row.id)}
-                      >
+                      <Button onClick={() => row.id && handleEditDestination(row.id)}>
                         <EditIcon sx={{ color: "blue" }} />
                       </Button>
-                      <Button
-                        onClick={() =>
-                          row.id && handleRemoveDestination(row.id)
-                        }
-                      >
+                      <Button onClick={() => row.id && handleRemoveDestination(row.id)}>
                         <DeleteIcon sx={{ color: "red" }} />
                       </Button>
                     </StyledTableCell>
@@ -557,17 +532,11 @@ const AdminTable: React.FC = () => {
                       inputProps={{ accept: "image/*" }}
                       style={{ display: "none" }}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        handleImageChange(
-                          e,
-                          `image${index}` as keyof Destination,
-                          index - 1
-                        )
+                        handleImageChange(e, `image${index}` as keyof Destination, index - 1)
                       }
                     />
                   </Button>
-                  {imageInputsFilled[index - 1] && (
-                    <CheckIcon style={{ color: "green" }} />
-                  )}
+                  {imageInputsFilled[index - 1] && <CheckIcon style={{ color: "green" }} />}
                 </Grid>
               ))}
             </Grid>
@@ -576,11 +545,7 @@ const AdminTable: React.FC = () => {
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button
-            onClick={
-              selectedDestinationId
-                ? handleUpdateDestination
-                : handleAddDestination
-            }
+            onClick={selectedDestinationId ? handleUpdateDestination : handleAddDestination}
             color="primary"
             variant="contained"
           >

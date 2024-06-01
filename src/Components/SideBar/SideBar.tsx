@@ -101,6 +101,13 @@ const SideBar = () => {
               <ListItemText />
             </ListItem>
           )}
+          <ListItem component={Link} to="/dashboardRequest">
+            <ListItemIcon>
+              <DashboardIcon />
+            </ListItemIcon>
+            <Typography>Destination Request</Typography>
+            <ListItemText />
+          </ListItem>
         </List>
         <Divider />
         <List>

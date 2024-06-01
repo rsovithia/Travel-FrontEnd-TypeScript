@@ -26,12 +26,14 @@ interface ApiResponse {
   }[];
 }
 
+const fileUrl = config.fileUrl;
+
 const Destinations: React.FC = () => {
   const [provinces, setProvinces] = useState<Province[]>([]);
 
   const getData = async () => {
     try {
-      const response = await fetch(`${config.apiUrl}/admin/destination/all`, {
+      const response = await fetch(`${config.apiUrl}/destination`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${config.accessToken}`,
@@ -42,7 +44,7 @@ const Destinations: React.FC = () => {
       const formattedProvinces = result.data.map((item) => ({
         id: item.id,
         name: item.name,
-        image: `${config.apiUrl}/${item.image1}`,
+        image: item.image1,
       }));
       setProvinces(formattedProvinces);
     } catch (error) {
@@ -80,12 +82,15 @@ const Destinations: React.FC = () => {
         <Grid container spacing={3}>
           {provinces.map((province, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
-              <Link to={`/destination/${province.id}`} style={{ textDecoration: 'none' }}>
+              <Link
+                to={`/destination/${province.id}`}
+                style={{ textDecoration: "none" }}
+              >
                 <Card elevation={2} sx={{ position: "relative" }}>
                   <CardMedia
                     component="img"
                     sx={{ height: 300 }} // Maintain 16:9 aspect ratio
-                    image={province.image} // Use province image
+                    image={fileUrl + province.image} // Use province image
                     alt={province.name}
                   />
                   <Box
@@ -94,7 +99,7 @@ const Destinations: React.FC = () => {
                       top: 0,
                       left: 0,
                       width: "90%",
-                      height: "100%",
+                      height: "90%",
                       background:
                         "linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0))",
                       color: "white",
@@ -121,3 +126,4 @@ const Destinations: React.FC = () => {
 };
 
 export default Destinations;
+  

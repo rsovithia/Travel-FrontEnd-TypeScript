@@ -1,5 +1,27 @@
 import { Box, Container, Typography, Grid } from "@mui/material";
 import React from "react";
+import config from "../../Api/config";
+
+const getPostsByUser = async () => {
+  try {
+    const response = await fetch(`${config.apiUrl}/auth/my-posts`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${config.accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    console.log("Fetched data:", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
 
 export default function DetailHomePages() {
   return (
@@ -8,7 +30,7 @@ export default function DetailHomePages() {
         <Grid item xs={6}>
           <Box sx={{ padding: 20 }}>
             <Typography variant="h3" gutterBottom align="center">
-              About The Websites
+              About The Websites 2
             </Typography>
             <Typography variant="body1">
               This is some text content for Box1. You can put any text here that

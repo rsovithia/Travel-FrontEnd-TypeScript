@@ -15,6 +15,7 @@ import AddUser from "./Pages/Admin/AddUser/AddUser";
 import Register from "./Pages/Register/Register";
 
 import UserPages from "./Pages/UserPages/UserPages";
+import DashboardRequest from "./Pages/Admin/dashboardRequest/dashboardRequest";
 // import DestinationDetails from "./Pages/DestinationDetails/DestinationDetails";
 
 function App() {
@@ -82,6 +83,7 @@ function App() {
             />
             <Route path="/profile" element={<Profile />} />
             <Route path="/category" element={<Category />} />
+            <Route path="/dashboardRequest" element={<DashboardRequest />} />
             <Route path="/AddUser" element={<AddUser />} />
           </Route>
         </Routes>
