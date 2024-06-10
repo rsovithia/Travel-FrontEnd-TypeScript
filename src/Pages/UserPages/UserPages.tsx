@@ -3,7 +3,6 @@ import {
   Typography,
   Button,
   Box,
-  Paper,
   Avatar,
   Dialog,
   DialogActions,
@@ -11,20 +10,18 @@ import {
   DialogContentText,
   DialogTitle,
   Container,
-  TableCell,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TableRow,
   Card,
   CardActions,
   CardContent,
   CardMedia,
+  IconButton,
+  Grid,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { logout } from "../../Auth/auth";
 import config from "../../Api/config";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface User {
   id: string;
@@ -34,21 +31,51 @@ interface User {
   role: string;
 }
 
+interface Destination {
+  description: string;
+  id: number;
+  name: string;
+  image1: string;
+  image2: string;
+  image3: string;
+  category: Category;
+  province: Province;
+  status: string;
+}
+
+interface Favorite {
+  id: number;
+  destination: Destination;
+  description: string;
+  created_at: string;
+  updated_at: string;
+  user_id: number;
+}
+
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface Province {
+  id: number;
+  name: string;
+}
+
 interface Post {
   id: number;
   name: string;
   description: string;
   status: string;
-  category: {
-    name: string;
-  };
-  province: {
-    name: string;
-  };
+  category: Category;
+  province: Province;
   created_at: string;
+  image1: string;
 }
 
-const getPostsByUser = async () => {
+const fileUrl = config.fileUrl;
+
+const getPostsByUser = async (): Promise<{ data: Post[] }> => {
   try {
     const response = await fetch(`${config.apiUrl}/auth/my-posts`, {
       method: "GET",
@@ -62,15 +89,14 @@ const getPostsByUser = async () => {
     }
 
     const data = await response.json();
-    console.log("Fetched data:", data);
     return data;
   } catch (error) {
     console.error("Error fetching data:", error);
-    return [];
+    return { data: [] };
   }
 };
 
-const getFavoritesByUser = async () => {
+const getFavoritesByUser = async (): Promise<{ data: Favorite[] }> => {
   try {
     const response = await fetch(`${config.apiUrl}/auth/my-favorites`, {
       method: "GET",
@@ -84,20 +110,50 @@ const getFavoritesByUser = async () => {
     }
 
     const data = await response.json();
-    console.log("Fetched favorites:", data); // Console the fetched favorites data here
     return data;
   } catch (error) {
     console.error("Error fetching data:", error);
-    return [];
+    return { data: [] };
   }
+};
+
+const removePost = async (postId: number) => {
+  try {
+    const response = await fetch(
+      `${config.apiUrl}/auth/delete-posts/${postId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    console.log(`Post with ID ${postId} has been removed.`);
+  } catch (error) {
+    console.error("Error removing post:", error);
+  }
+};
+
+const isFavorite = (item: Favorite | Post): item is Favorite => {
+  return (item as Favorite).destination !== undefined;
 };
 
 const Navbar: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [confirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
   const [showTable, setShowTable] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [favorites, setFavorites] = useState<Post[]>([]);
+  const [favorites, setFavorites] = useState<Favorite[]>([]);
+  const [favoriteToRemove, setFavoriteToRemove] = useState<Favorite | null>(
+    null
+  );
+  const [postToRemove, setPostToRemove] = useState<Post | null>(null);
 
   useEffect(() => {
     const storedUser: User = {
@@ -113,13 +169,10 @@ const Navbar: React.FC = () => {
     }
 
     // Fetch posts by user
-    getPostsByUser().then((data) => setPosts(data.data));
+    getPostsByUser().then((data) => setPosts(data.data || []));
 
-    // Fetch favorites by user and log the result
-    getFavoritesByUser().then((data) => {
-      console.log("Favorites data:", data.data);
-      setFavorites(data.data);
-    });
+    // Fetch favorites by user
+    getFavoritesByUser().then((data) => setFavorites(data.data || []));
   }, []);
 
   const handleLogout = () => {
@@ -133,6 +186,64 @@ const Navbar: React.FC = () => {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
+  };
+
+  const handleConfirmationDialogOpen = (favorite: Favorite) => {
+    setFavoriteToRemove(favorite);
+    setConfirmationDialogOpen(true);
+  };
+
+  const handleConfirmationDialogClose = () => {
+    setConfirmationDialogOpen(false);
+    setFavoriteToRemove(null);
+  };
+
+  const handleRemoveFavorite = async () => {
+    if (!favoriteToRemove) return;
+
+    try {
+      const response = await fetch(
+        `${config.apiUrl}/auth/my-favorites/${favoriteToRemove.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${config.accessToken}`,
+          },
+        }
+      );
+      if (response.ok) {
+        setFavorites((prevFavorites) =>
+          prevFavorites.filter(
+            (favorite) => favorite.id !== favoriteToRemove.id
+          )
+        );
+        handleConfirmationDialogClose();
+      } else {
+        console.error("Error removing favorite");
+      }
+    } catch (error) {
+      console.error("Error removing favorite:", error);
+    }
+  };
+
+  const handlePostConfirmationDialogOpen = (post: Post) => {
+    setPostToRemove(post);
+    setConfirmationDialogOpen(true);
+  };
+
+  const handlePostConfirmationDialogClose = () => {
+    setConfirmationDialogOpen(false);
+    setPostToRemove(null);
+  };
+
+  const handleRemovePost = async () => {
+    if (!postToRemove) return;
+
+    await removePost(postToRemove.id);
+    setPosts((prevPosts) =>
+      prevPosts.filter((post) => post.id !== postToRemove.id)
+    );
+    handlePostConfirmationDialogClose();
   };
 
   return (
@@ -257,7 +368,7 @@ const Navbar: React.FC = () => {
           }}
           onClick={() => setShowTable(true)}
         >
-          Table
+          Favorites
         </Button>
         <Button
           sx={{
@@ -265,79 +376,263 @@ const Navbar: React.FC = () => {
           }}
           onClick={() => setShowTable(false)}
         >
-          Card
+          Post
         </Button>
       </Box>
-      <Box>
-        {showTable ? (
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell align="right">Name</TableCell>
-                  <TableCell align="right">Description</TableCell>
-                  <TableCell align="right">Category</TableCell>
-                  <TableCell align="right">Province</TableCell>
-                  <TableCell align="right">Created At</TableCell>
-                  <TableCell align="right">Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {posts.map((post) => (
-                  <TableRow
-                    key={post.id}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+      <Grid container spacing={2}>
+        {(showTable ? favorites : posts).map((item) => {
+          if (isFavorite(item)) {
+            return (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
+                <Card
+                  sx={{
+                    height: "80%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    maxWidth: 320,
+
+                    position: "relative",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      padding: 2,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
                   >
-                    <TableCell component="th" scope="row">
-                      {post.id}
-                    </TableCell>
-                    <TableCell align="right">{post.name}</TableCell>
-                    <TableCell align="right">{post.description}</TableCell>
-                    <TableCell align="right">{post.category.name}</TableCell>
-                    <TableCell align="right">{post.province.name}</TableCell>
-                    <TableCell align="right">{post.created_at}</TableCell>
-                    <TableCell align="right">{post.status}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        ) : (
-          favorites.map((favorite) => (
-            <Card key={favorite.id} sx={{ maxWidth: 345, marginBottom: 2 }}>
-              <CardMedia
-                sx={{ height: 140 }}
-                image="/static/images/cards/contemplative-reptile.jpg"
-                title={favorite.name}
-              />
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {favorite.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {favorite.description}
-                </Typography>
-              </CardContent>
-              <CardActions>
-                <Button size="small">Share</Button>
-                <Button size="small">Learn More</Button>
-              </CardActions>
-            </Card>
-          ))
-        )}
-      </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography
+                        gutterBottom
+                        variant="h6"
+                        component="div"
+                        sx={{
+                          textOverflow: "ellipsis",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {item.destination?.name || "Unnamed"}
+                      </Typography>
+                      <IconButton
+                        aria-label="remove favorite"
+                        sx={{
+                          alignItems: "center",
+                          border: "1px solid #ddd",
+                          borderRadius: "8px",
+                          padding: "1px",
+                        }}
+                        onClick={() => handleConfirmationDialogOpen(item)}
+                      >
+                        <FavoriteIcon
+                          sx={{
+                            bottom: "2px",
+                            color: "#f44336",
+                            display: "flex",
+                            position: "relative",
+                          }}
+                        />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                  <CardMedia
+                    component="img"
+                    height="140"
+                    image={
+                      fileUrl + item.destination?.image1 ||
+                      "https://images.unsplash.com/photo-1527549993586-dff825b37782?auto=format&fit=crop&w=286"
+                    }
+                    alt={item.destination?.name || "Unnamed"}
+                  />
+                  <CardContent
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "flex-start",
+                      height: "100%",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        Description: {item.destination?.description || "N/A"}
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                  <CardActions
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Button
+                      size="small"
+                      color="primary"
+                      component={Link}
+                      to={`/destination/${item.destination?.id}`}
+                    >
+                      View Details
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            );
+          } else {
+            return (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    maxWidth: 320,
+                    marginBottom: 2,
+                    position: "relative",
+                  }}
+                >
+                  <Box sx={{ padding: 2 }}>
+                    <Typography variant="h6">{item.name}</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {item.name}
+                    </Typography>
+                    <IconButton
+                      aria-label="remove post"
+                      sx={{
+                        position: "absolute",
+                        top: "1rem",
+                        right: "0.5rem",
+                      }}
+                      onClick={() => handlePostConfirmationDialogOpen(item)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                  <CardMedia
+                    component="img"
+                    height="140"
+                    image={
+                      fileUrl + item.image1 ||
+                      "https://images.unsplash.com/photo-1527549993586-dff825b37782?auto=format&fit=crop&w=286"
+                    }
+                    alt={item.name}
+                  />
+                  <CardContent
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "flex-start",
+                      height: "100%",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      Description: {item.id}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      Category: {item.category.name}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      Province: {item.province.name}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      Status: {item.status}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      color="primary"
+                      component={Link}
+                      to={`/destination/${item.id}`}
+                    >
+                      View Details
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            );
+          }
+        })}
+      </Grid>
+
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>Post</DialogTitle>
         <DialogContent>
           <DialogContentText>Here you can create a new post.</DialogContentText>
+          {/* Form for creating a new post can be added here */}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose} color="primary">
             Cancel
           </Button>
           <Button onClick={handleDialogClose} color="primary">
-            Post
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={confirmationDialogOpen}
+        onClose={handleConfirmationDialogClose}
+      >
+        <DialogTitle>
+          Remove {favoriteToRemove ? "Favorite" : "Post"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to remove (
+            <span style={{ color: "Black" }}>
+              {favoriteToRemove
+                ? favoriteToRemove.destination?.name || "Unnamed"
+                : postToRemove?.name || "Unnamed"}
+            </span>
+            ) from your {favoriteToRemove ? "favorites" : "posts"}?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmationDialogClose} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={favoriteToRemove ? handleRemoveFavorite : handleRemovePost}
+            color="primary"
+          >
+            Remove
           </Button>
         </DialogActions>
       </Dialog>

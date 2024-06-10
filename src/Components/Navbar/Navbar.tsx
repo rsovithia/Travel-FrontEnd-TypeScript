@@ -19,6 +19,9 @@ import {
   DialogTitle,
   TextField,
   Input,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
@@ -51,6 +54,11 @@ interface Destination {
   updated_at: string;
 }
 
+interface Category {
+  id: number;
+  name: string;
+}
+
 const Navbar: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 700);
@@ -63,7 +71,7 @@ const Navbar: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
 
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [newDestination, setNewDestination] = useState<Destination>({
     name: "",
     description: "",
@@ -71,9 +79,9 @@ const Navbar: React.FC = () => {
     category_id: "",
     lat: "",
     long: "",
-    image1: "",
-    image2: "",
-    image3: "",
+    image1: null,
+    image2: null,
+    image3: null,
     created_at: "",
     updated_at: "",
   });
@@ -81,6 +89,11 @@ const Navbar: React.FC = () => {
     false,
     false,
     false,
+  ]);
+  const [imagePreviews, setImagePreviews] = useState<(string | null)[]>([
+    null,
+    null,
+    null,
   ]);
 
   useEffect(() => {
@@ -123,7 +136,7 @@ const Navbar: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${config.apiUrl}/admin/category`, {
+      const response = await fetch(`${config.apiUrl}/auth/category`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${config.accessToken}`,
@@ -142,7 +155,7 @@ const Navbar: React.FC = () => {
 
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev);
-    document.body.style.overflow = menuOpen ? "hidden" : "visible";
+    document.body.style.overflow = menuOpen ? "visible" : "hidden";
   };
 
   const handleToggle = () => {
@@ -216,6 +229,11 @@ const Navbar: React.FC = () => {
           filledCopy[index] = true;
           return filledCopy;
         });
+        setImagePreviews((prevPreviews) => {
+          const previewsCopy = [...prevPreviews];
+          previewsCopy[index] = reader.result as string;
+          return previewsCopy;
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -224,8 +242,8 @@ const Navbar: React.FC = () => {
   const handleSave = async () => {
     const method = newDestination.id ? "PUT" : "POST";
     const url = newDestination.id
-      ? `${config.apiUrl}/admin/destination/${newDestination.id}`
-      : `${config.apiUrl}/admin/destination/add`;
+      ? `${config.apiUrl}/auth/destination/${newDestination.id}`
+      : `${config.apiUrl}/auth/destination/add`;
 
     try {
       const response = await fetch(url, {
@@ -292,22 +310,6 @@ const Navbar: React.FC = () => {
         </Button>
         <Button color="inherit" component={Link} to="/#">
           Recommendation
-        </Button>
-        <Button
-          sx={{
-            width: "100px",
-            backgroundColor: "#DF6E1A",
-            borderRadius: "20px 0 0 20px",
-            color: "black",
-            fontWeight: "600",
-            border: "1px solid #FFFFFF",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onClick={() => setOpenCreateDialog(true)}
-        >
-          Post
         </Button>
       </Grid>
       <Grid item>
@@ -411,7 +413,7 @@ const Navbar: React.FC = () => {
                                       },
                                     }}
                                     component={Link}
-                                    to="/userpages "
+                                    to="/userpages"
                                   >
                                     View Profile
                                   </Button>
@@ -424,7 +426,6 @@ const Navbar: React.FC = () => {
                                   justifyContent: "center",
                                   alignItems: "center",
                                   paddingBottom: "10px",
-
                                   textAlign: "center",
                                 }}
                               >
@@ -488,7 +489,7 @@ const Navbar: React.FC = () => {
                                       type="button"
                                       className="logout"
                                       onClick={handleLogout}
-                                      sx={{
+                                      style={{
                                         width: "100px",
                                         backgroundColor: "#DF6E1A",
                                         borderRadius: "0 20px 20px 0",
@@ -577,34 +578,66 @@ const Navbar: React.FC = () => {
                 />
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  margin="dense"
-                  id="province_id"
-                  name="province_id"
-                  label="Province ID"
-                  type="number"
-                  fullWidth
-                  value={newDestination.province_id}
-                  onChange={handleChange}
-                />
+                <FormControl fullWidth>
+                  <Select
+                    labelId="province-select-label"
+                    value={newDestination.province_id}
+                    onChange={(e) =>
+                      setNewDestination((prevDestination) => ({
+                        ...prevDestination,
+                        province_id: e.target.value as number,
+                      }))
+                    }
+                  >
+                    <MenuItem value=""></MenuItem>
+                    <MenuItem value={1}>Banteay Meanchey</MenuItem>
+                    <MenuItem value={2}>Kampong Cham</MenuItem>
+                    <MenuItem value={3}>Tboung Khmum</MenuItem>
+                    <MenuItem value={4}>Battambang</MenuItem>
+                    <MenuItem value={5}>Kampong Chhnang</MenuItem>
+                    <MenuItem value={6}>Kampong Speu</MenuItem>
+                    <MenuItem value={7}>Kampong Thom</MenuItem>
+                    <MenuItem value={8}>Kampot</MenuItem>
+                    <MenuItem value={9}>Kandal</MenuItem>
+                    <MenuItem value={10}>Koh Kong</MenuItem>
+                    <MenuItem value={11}>Kratié</MenuItem>
+                    <MenuItem value={12}>Mondulkiri</MenuItem>
+                    <MenuItem value={13}>Phnom Penh</MenuItem>
+                    <MenuItem value={14}>Preah Vihear</MenuItem>
+                    <MenuItem value={15}>Prey Veng</MenuItem>
+                    <MenuItem value={16}>Pursat</MenuItem>
+                    <MenuItem value={17}>Ratanakiri</MenuItem>
+                    <MenuItem value={18}>Siem Reap</MenuItem>
+                    <MenuItem value={19}>Preah Sihanouk</MenuItem>
+                    <MenuItem value={20}>Stung Treng</MenuItem>
+                    <MenuItem value={21}>Svay Rieng</MenuItem>
+                    <MenuItem value={22}>Takéo</MenuItem>
+                    <MenuItem value={23}>Oddar Meanchey</MenuItem>
+                    <MenuItem value={24}>Kep</MenuItem>
+                    <MenuItem value={25}>Pailin</MenuItem>
+                    <MenuItem value={26}>Tboung Khmum</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  select
-                  margin="dense"
-                  id="category_id"
-                  name="category_id"
-                  label="Category"
-                  fullWidth
-                  value={newDestination.category_id}
-                  onChange={handleChange}
-                >
-                  {categories.map((item) => (
-                    <MenuItem key={item.id} value={item.id}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                <FormControl fullWidth>
+                  <Select
+                    labelId="category-select-label"
+                    value={newDestination.category_id}
+                    onChange={(e) =>
+                      setNewDestination((prevDestination) => ({
+                        ...prevDestination,
+                        category_id: e.target.value as string,
+                      }))
+                    }
+                  >
+                    {categories.map((category) => (
+                      <MenuItem key={category.id} value={category.id}>
+                        {category.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -664,7 +697,19 @@ const Navbar: React.FC = () => {
                       cursor: "pointer",
                     }}
                   >
-                    Choose Image {index}
+                    {imagePreviews[index - 1] ? (
+                      <img
+                        src={imagePreviews[index - 1]!}
+                        alt={`Preview ${index}`}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    ) : (
+                      `Choose Image ${index}`
+                    )}
                     <Input
                       type="file"
                       id={`image${index}`}

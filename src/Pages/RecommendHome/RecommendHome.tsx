@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+ 
 import {
   Container,
   Typography,
@@ -9,7 +9,7 @@ import {
   Button,
   Box,
 } from "@mui/material";
-import Slider from "react-slick";
+ 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 

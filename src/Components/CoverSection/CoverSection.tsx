@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Box, Typography, Grid } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -6,44 +6,55 @@ import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import background_CoverPages from "../../assets/CoverPages/background_CoverPages.svg";
-
 import { EffectCoverflow, Pagination } from "swiper/modules";
+import config from "../../Api/config";
 
-const provinces = [
-  {
-    ranking: "#1",
-    name: "Phnom Penh",
-    description: "The capital city of Cambodia. And have a lot of places.",
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Phnom_Penh_Independence_Monument.jpg/800px-Phnom_Penh_Independence_Monument.jpg",
-  },
-  {
-    ranking: "#2",
-    name: "Siem Reap",
-    description: "Famous for the Angkor Wat temple complex.",
-    image:
-      "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/15/33/fc/e0/siem-reap.jpg?w=1400&h=1400&s=1",
-  },
-  {
-    ranking: "#3",
-    name: "Sihanoukville",
-    description: "Known for its beaches and nightlife.",
-    image:
-      "https://media.istockphoto.com/id/514263434/photo/quiet-empty-paradise-beach-in-koh-rong-near-sihanoukville-cambodia.jpg?s=612x612&w=0&k=20&c=H9n0e9ldKM7XyZqwJ4e7VfTwbOkUne8z2nSWGwEf-9A=",
-  },
-  {
-    ranking: "#4",
-    name: "Koh Rong",
-    description:
-      "An island known for its stunning beaches and vibrant nightlife, located near Sihanoukville.",
-    image:
-      "https://lp-cms-production.imgix.net/2019-06/474416112_super.jpg?fit=crop&q=40&sharp=10&vib=20&auto=format&ixlib=react-8.6.4",
-  },
-  // Add more provinces as needed
-];
+const fileUrl = config.fileUrl;
+
+interface Province {
+  ranking: string;
+  name: string;
+  description: string;
+  image2: string;
+}
 
 const CoverSection: React.FC = () => {
-  const [selectedProvince, setSelectedProvince] = useState(provinces[0]);
+  const [topRatedProvinces, setTopRatedProvinces] = useState<Province[]>([]);
+  const [selectedProvince, setSelectedProvince] = useState<Province | null>(
+    null
+  );
+
+  useEffect(() => {
+    const getDataTopRating = async () => {
+      try {
+        const response = await fetch(`${config.apiUrl}/destination/topRating`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${config.accessToken}`,
+          },
+        });
+        const result = await response.json();
+        console.log("API response:", result); // Log the API response
+
+        if (result.status === "success") {
+          const provinces: Province[] = result.data.map(
+            (item: any, index: number) => ({
+              ranking: `#${index + 1}`,
+              name: item.destination.name,
+              description: item.destination.description,
+              image1: `${config.apiUrl}/${item.destination.image1}`, // Accessing the correct image1 field
+            })
+          );
+          setTopRatedProvinces(provinces);
+          setSelectedProvince(provinces[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    getDataTopRating();
+  }, []);
 
   return (
     <Box
@@ -94,24 +105,26 @@ const CoverSection: React.FC = () => {
             >
               in Cambodia
             </Typography>
-            <Box
-              sx={{
-                background: "rgba(255, 255, 255, 0.2)",
-                borderRadius: "15px",
-                padding: "20px",
-                height: "320px",
-                boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
-                backdropFilter: "blur(5px)",
-                color: "white",
-              }}
-            >
-              <Typography variant="h4" gutterBottom>
-                {selectedProvince.ranking} {selectedProvince.name}
-              </Typography>
-              <Typography variant="subtitle1" gutterBottom>
-                {selectedProvince.description}
-              </Typography>
-            </Box>
+            {selectedProvince && (
+              <Box
+                sx={{
+                  background: "rgba(255, 255, 255, 0.2)",
+                  borderRadius: "15px",
+                  padding: "20px",
+                  height: "320px",
+                  boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+                  backdropFilter: "blur(5px)",
+                  color: "white",
+                }}
+              >
+                <Typography variant="h4" gutterBottom>
+                  {selectedProvince.ranking} {selectedProvince.name}
+                </Typography>
+                <Typography variant="subtitle1" gutterBottom>
+                  {selectedProvince.description}
+                </Typography>
+              </Box>
+            )}
           </Grid>
           <Grid item xs={12} md={8}>
             <Swiper
@@ -135,10 +148,10 @@ const CoverSection: React.FC = () => {
                 padding: "10px 150px",
               }}
               onSlideChange={(swiper) =>
-                setSelectedProvince(provinces[swiper.activeIndex])
+                setSelectedProvince(topRatedProvinces[swiper.activeIndex])
               }
             >
-              {provinces.map((province, index) => (
+              {topRatedProvinces.map((province, index) => (
                 <SwiperSlide key={index}>
                   <Link
                     to={`/province/${province.name}`}
@@ -147,15 +160,13 @@ const CoverSection: React.FC = () => {
                     <Box
                       sx={{
                         position: "relative",
-               
                         borderRadius: "15px",
                         overflow: "hidden",
                         transition: "transform 0.3s, box-shadow 0.3s",
-                        
                       }}
                     >
                       <img
-                        src={province.image}
+                        src={fileUrl + province.image2}  
                         alt={province.name}
                         style={{
                           height: 500,

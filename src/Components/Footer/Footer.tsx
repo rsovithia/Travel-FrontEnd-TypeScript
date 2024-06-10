@@ -2,8 +2,7 @@ import React from "react";
 import "./Footer.css";
 
 import { Link } from "react-router-dom";
-import { Button } from "@mui/material";
-
+ 
 const Footer: React.FC = () => {
   return (
     <div className="footer-container">

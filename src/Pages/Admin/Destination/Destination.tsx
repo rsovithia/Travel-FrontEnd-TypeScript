@@ -44,10 +44,15 @@ interface Destination {
   updated_at: string;
 }
 
+interface Category {
+  id: number;
+  name: string;
+}
+
 const AdminTable: React.FC = () => {
   const [data, setData] = useState<Destination[]>([]);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [selectedDestinationId, setSelectedDestinationId] = useState<number | null>(null);
   const [newDestination, setNewDestination] = useState<Destination>({
     name: "",

@@ -1,10 +1,8 @@
-import { Toolbar, Typography, Box, IconButton } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import { useNavigate } from "react-router-dom";
-
+import { Toolbar, Typography, Box } from "@mui/material";
+ 
+ 
 export default function Header() {
-  const navigate = useNavigate();
-
+ 
   return (
     <Box sx={{ margin:"20px"} }>
       <Box

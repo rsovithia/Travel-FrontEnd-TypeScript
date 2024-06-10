@@ -1,4 +1,4 @@
-import React from "react";
+ 
 import {
   Box,
   Typography,
@@ -9,19 +9,13 @@ import {
   CardContent,
 } from "@mui/material";
 import CoverSection from "../../Components/CoverSection/CoverSection";
-import icon from "../../assets/Vector.svg";
+ 
 import Footer from "../../Components/Footer/Footer";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+ 
 import DetailHomePages from "../DetailHomePages/DetailHomePages";
 import RecommendHome from "../RecommendHome/RecommendHome";
 // Mock data for cover section
-const coverData = {
-  title: "Travel Website",
-  description:
-    "Travel app is the website that helps you find your destination in Cambodia. Whether you're looking for historical sites, natural wonders, or cultural experiences, our platform provides comprehensive information to make your trip memorable. Explore Cambodia's diverse provinces, from the bustling streets of Phnom Penh to the serene landscapes of Siem Reap. Our platform showcases the beauty and richness of each region, allowing you to plan your itinerary with ease.",
-  imageUrl: "../../assets/Vector.svg",
-};
-
+ 
 // Mock data for travel recommendations
 const recommendationsData = [
   {
