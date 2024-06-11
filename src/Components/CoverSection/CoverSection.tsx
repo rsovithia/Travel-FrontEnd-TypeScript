@@ -9,13 +9,13 @@ import background_CoverPages from "../../assets/CoverPages/background_CoverPages
 import { EffectCoverflow, Pagination } from "swiper/modules";
 import config from "../../Api/config";
 
-const fileUrl = config.fileUrl;
-
 interface Province {
+  id: string; // Added id field to the Province interface
   ranking: string;
   name: string;
   description: string;
-  image2: string;
+  image1: string;
+  average_rating: string;
 }
 
 const CoverSection: React.FC = () => {
@@ -24,37 +24,55 @@ const CoverSection: React.FC = () => {
     null
   );
 
-  useEffect(() => {
-    const getDataTopRating = async () => {
-      try {
-        const response = await fetch(`${config.apiUrl}/destination/topRating`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${config.accessToken}`,
-          },
-        });
-        const result = await response.json();
-        console.log("API response:", result); // Log the API response
+  const fetchTopView = async () => {
+    try {
+      const response = await fetch(`${config.apiUrl}/destination/topRating`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
 
-        if (result.status === "success") {
-          const provinces: Province[] = result.data.map(
-            (item: any, index: number) => ({
-              ranking: `#${index + 1}`,
-              name: item.destination.name,
-              description: item.destination.description,
-              image1: `${config.apiUrl}/${item.destination.image1}`, // Accessing the correct image1 field
-            })
-          );
-          setTopRatedProvinces(provinces);
-          setSelectedProvince(provinces[0]);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("API Response:", data);
+
+      const provinces = data.data.map((item: any) => ({
+        id: item.destination.id, // Added id mapping
+        ranking: item.average_rating,
+        name: item.destination.name,
+        description: item.destination.description,
+        image1: item.destination.image1,
+        average_rating: item.average_rating,
+      }));
+
+      return provinces;
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const provinces = await fetchTopView();
+      setTopRatedProvinces(provinces);
+      if (provinces.length > 0) {
+        setSelectedProvince(provinces[0]);
       }
     };
 
-    getDataTopRating();
+    fetchData();
   }, []);
+
+  const fileUrl = config.fileUrl;
+
+  const handleProvinceClick = (province: Province) => {
+    console.log("Selected Province ID:", province.id);
+  };
 
   return (
     <Box
@@ -81,10 +99,8 @@ const CoverSection: React.FC = () => {
         },
       }}
     >
-      <Box sx={{ width: "90%" }}>
-        <Grid item xs={2} md={2}></Grid>
-
-        <Grid container spacing={2}>
+      <Box sx={{ width: "90%", textAlign: "center" }}>
+        <Grid container spacing={2} justifyContent="center">
           <Grid item xs={12} md={4}>
             <Typography
               marginBottom={0}
@@ -93,6 +109,7 @@ const CoverSection: React.FC = () => {
               gutterBottom
               display="flex"
               alignItems="center"
+              justifyContent="center"
             >
               Top 5 Destinations
             </Typography>
@@ -102,6 +119,9 @@ const CoverSection: React.FC = () => {
               color={"white"}
               variant="h2"
               gutterBottom
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
             >
               in Cambodia
             </Typography>
@@ -139,13 +159,14 @@ const CoverSection: React.FC = () => {
                 modifier: 1,
                 slideShadows: true,
               }}
-              pagination={true}
+              pagination={{ clickable: true }}
               modules={[EffectCoverflow, Pagination]}
               className="mySwiper"
               style={{
-                width: "400px",
-                marginTop: "140px",
-                padding: "10px 150px",
+                width: "100%",
+                maxWidth: "800px",
+                margin: "0 auto",
+                padding: "20px",
               }}
               onSlideChange={(swiper) =>
                 setSelectedProvince(topRatedProvinces[swiper.activeIndex])
@@ -153,30 +174,35 @@ const CoverSection: React.FC = () => {
             >
               {topRatedProvinces.map((province, index) => (
                 <SwiperSlide key={index}>
-                  <Link
-                    to={`/province/${province.name}`}
-                    style={{ textDecoration: "none" }}
+                  <Box
+                    onClick={() => handleProvinceClick(province)}
+                    sx={{
+                      position: "relative",
+                      borderRadius: "15px",
+                      overflow: "hidden",
+                      transition: "transform 0.3s, box-shadow 0.3s",
+                      "&:hover": {
+                        transform: "scale(1.05)",
+                        boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
+                      },
+                    }}
                   >
-                    <Box
-                      sx={{
-                        position: "relative",
-                        borderRadius: "15px",
-                        overflow: "hidden",
-                        transition: "transform 0.3s, box-shadow 0.3s",
-                      }}
+                    <Link
+                      to={`/destination/${province.id}`}
+                      style={{ textDecoration: "none" }}
                     >
                       <img
-                        src={fileUrl + province.image2}  
+                        src={fileUrl + province.image1}
                         alt={province.name}
                         style={{
-                          height: 500,
+                          height: 600,
                           objectFit: "cover",
                           borderRadius: "15px",
                           width: "100%",
                         }}
                       />
-                    </Box>
-                  </Link>
+                    </Link>
+                  </Box>
                 </SwiperSlide>
               ))}
             </Swiper>

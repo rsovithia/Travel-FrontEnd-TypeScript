@@ -160,7 +160,7 @@ const Destinations: React.FC = () => {
                 borderRadius: "8px",
               }}
             >
-              <Typography>ALL Destination</Typography>
+              <Typography fontWeight={600} variant="h4">ALL Destination</Typography>
             </Box>
             <Box
               sx={{

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent, MouseEvent } from "react";
 import {
   Box,
   Button,
@@ -20,15 +20,23 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import config from "../../../Api/config";
 
+interface User {
+  id?: number;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+}
+
 export default function AdminTable() {
   const [openDialog, setOpenDialog] = useState(false);
-  const [userData, setUserData] = useState({
+  const [userData, setUserData] = useState<User>({
     name: "",
     email: "",
     phone: "",
     password: "",
   });
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<User[]>([]);
 
   useEffect(() => {
     getDataUser();
@@ -48,7 +56,7 @@ export default function AdminTable() {
     });
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserData((prevData) => ({
       ...prevData,
@@ -108,7 +116,7 @@ export default function AdminTable() {
     }
   };
 
-  const handleEditUser = (user) => {
+  const handleEditUser = (user: User) => {
     setUserData(user);
     handleOpenDialog();
   };
@@ -192,11 +200,11 @@ export default function AdminTable() {
             />
             <TextField
               margin="dense"
-              id="phoneNumber"
+              id="phone"
               label="Phone Number"
               type="text"
               fullWidth
-              name="phoneNumber"
+              name="phone"
               value={userData.phone}
               onChange={handleChange}
             />

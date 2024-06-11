@@ -1,4 +1,3 @@
-// auth.tsx
 import config from "../Api/config";
 
 interface User {
@@ -71,27 +70,13 @@ const authenticate = async (
 
 const logout = (): void => {
   config.setAccessToken(null);
-  localStorage.removeItem("id");
-  localStorage.removeItem("name");
-  localStorage.removeItem("email");
-  localStorage.removeItem("email_verified_at");
-  localStorage.removeItem("created_at");
-  localStorage.removeItem("updated_at");
-  localStorage.removeItem("role");
-  localStorage.removeItem("avatar");
-  localStorage.removeItem("phone");
-  localStorage.removeItem("is_active");
-  localStorage.removeItem("creator_id");
-  localStorage.removeItem("updater_id");
+  localStorage.clear();
 };
-
-// auth.tsx
 
 const isAuthenticated = (): boolean => {
-  const role = localStorage.getItem("role");
-  return !!config.accessToken && role === "admin";
+  const token = config.accessToken;
+  return !!token;
 };
-// auth.tsx
 
 const isAdmin = (): boolean => {
   const role = localStorage.getItem("role");
@@ -99,6 +84,3 @@ const isAdmin = (): boolean => {
 };
 
 export { authenticate, logout, isAuthenticated, isAdmin };
-
-
-// export { authenticate, logout, isAuthenticated };

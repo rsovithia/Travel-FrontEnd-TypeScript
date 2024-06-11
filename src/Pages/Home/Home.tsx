@@ -1,4 +1,3 @@
- 
 import {
   Box,
   Typography,
@@ -9,13 +8,14 @@ import {
   CardContent,
 } from "@mui/material";
 import CoverSection from "../../Components/CoverSection/CoverSection";
- 
+
 import Footer from "../../Components/Footer/Footer";
- 
+
 import DetailHomePages from "../DetailHomePages/DetailHomePages";
 import RecommendHome from "../RecommendHome/RecommendHome";
+import MostViewsDeatil from "../MostViewsDeatil/MostViewsDeatil";
 // Mock data for cover section
- 
+
 // Mock data for travel recommendations
 const recommendationsData = [
   {
@@ -61,79 +61,7 @@ export default function Home() {
       <CoverSection />
       <RecommendHome />
       <DetailHomePages />
-
-      <Box
-        sx={{
-         
-          padding: "20px",
-          marginTop: "40px",
-        }}
-      >
-        <Box
-          sx={{
-            padding: "0px",
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "20px",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            sx={{ fontWeight: "600" }}
-            gutterBottom
-            variant="h5"
-            component="div"
-          >
-            Travel Recommendation
-          </Typography>
-          <Typography>
-            Travel app is the website that helps you to get your destination in
-            Cambodia{" "}
-          </Typography>
-        </Box>
-        <Box
-          sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
-        >
-          <Grid container spacing={6} justifyContent="center">
-            {recommendationsData.map((recommendation, index) => (
-              <Grid item key={index}>
-                <Card
-                  sx={{ maxWidth: "300px", backgroundColor: "transparent" }}
-                >
-                  <CardActionArea>
-                    <CardMedia
-                      sx={{ width: "100%" }}
-                      component="img"
-                      height="200"
-                      image={recommendation.imageUrl}
-                      alt={`Recommendation ${index}`}
-                    />
-                    <CardContent sx={{ backgroundColor: "transparent" }}>
-                      <Typography
-                        gutterBottom
-                        variant="h5"
-                        component="div"
-                   
-                      >
-                        {recommendation.title}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                   
-                      >
-                        {recommendation.description}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      </Box>
-
+      <MostViewsDeatil />
       <Footer />
     </>
   );

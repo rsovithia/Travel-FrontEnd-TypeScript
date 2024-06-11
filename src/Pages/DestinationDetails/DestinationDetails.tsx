@@ -15,6 +15,8 @@ import {
 import config from "../../Api/config";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import GoogleMap from "../../Components/GoogleMaps/GoogleMaps"; // Import the GoogleMap component
+import useAuth from "../../hooks/useAuth"; // Import the useAuth hook
+import LoginDialog from "../../Components/LoginDialog"; // Import the LoginDialog component
 
 interface Destination {
   id: number;
@@ -31,12 +33,14 @@ const fileUrl = config.fileUrl;
 
 const DestinationDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { authenticated } = useAuth(); // Get the authentication status
   const [destination, setDestination] = useState<Destination | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [rating, setRating] = useState<number | null>(null);
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [alreadyRated, setAlreadyRated] = useState<boolean>(false);
   const [favoriteId, setFavoriteId] = useState<number | null>(null);
+  const [loginDialogOpen, setLoginDialogOpen] = useState<boolean>(false); // State for login dialog
 
   useEffect(() => {
     getData();
@@ -53,8 +57,10 @@ const DestinationDetails: React.FC = () => {
       const result = await response.json();
       setDestination(result.data);
       setLoading(false);
-      checkFavorite(result.data.id);
-      checkRating(result.data.id);
+      if (authenticated) {
+        checkFavorite(result.data.id);
+        checkRating(result.data.id);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
       setLoading(false);
@@ -62,6 +68,11 @@ const DestinationDetails: React.FC = () => {
   };
 
   const handleFavoriteClick = async () => {
+    if (!authenticated) {
+      setLoginDialogOpen(true);
+      return;
+    }
+
     if (isFavorite) {
       await removeFavorite();
     } else {
@@ -170,6 +181,11 @@ const DestinationDetails: React.FC = () => {
     event: React.ChangeEvent<{}>,
     newValue: number | null
   ) => {
+    if (!authenticated) {
+      setLoginDialogOpen(true);
+      return;
+    }
+
     if (newValue !== null) {
       try {
         const response = await fetch(
@@ -197,7 +213,10 @@ const DestinationDetails: React.FC = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="md" style={{ textAlign: "center", marginTop: "20px" }}>
+      <Container
+        maxWidth="md"
+        style={{ textAlign: "center", marginTop: "20px" }}
+      >
         <CircularProgress />
       </Container>
     );
@@ -205,14 +224,17 @@ const DestinationDetails: React.FC = () => {
 
   if (!destination) {
     return (
-      <Container maxWidth="md" style={{ textAlign: "center", marginTop: "20px" }}>
+      <Container
+        maxWidth="md"
+        style={{ textAlign: "center", marginTop: "20px" }}
+      >
         <Typography variant="h5">Destination not found</Typography>
       </Container>
     );
   }
 
   return (
-    <Container maxWidth="md" style={{ marginTop: "20px" }}>
+    <Container maxWidth="lg" style={{ marginTop: "20px" }}>
       <Card>
         <CardMedia
           component="img"
@@ -221,22 +243,26 @@ const DestinationDetails: React.FC = () => {
           alt={destination.name}
         />
         <CardContent>
-          <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
             <Typography variant="h4" gutterBottom>
               {destination.name}
             </Typography>
             <IconButton sx={{ bottom: "10px" }} onClick={handleFavoriteClick}>
-              <FavoriteIcon color={isFavorite ? "secondary" : "default"} />
+              <FavoriteIcon color={isFavorite ? "error" : "disabled"} />
             </IconButton>
           </Box>
-          {alreadyRated ? (
-            <Typography>Rated</Typography>
-          ) : (
+          {!alreadyRated ? (
             <Rating
               name="destination-rating"
               value={rating}
               onChange={handleRatingChange}
             />
+          ) : (
+            <Typography>Rated</Typography>
           )}
           <Typography variant="body1" paragraph>
             {destination.description}
@@ -252,7 +278,10 @@ const DestinationDetails: React.FC = () => {
               {destination.lat}, Longitude: {destination.long}
             </a>
           </Typography>
-          <GoogleMap lat={parseFloat(destination.lat)} lon={parseFloat(destination.long)} />
+          <GoogleMap
+            lat={parseFloat(destination.lat)}
+            lon={parseFloat(destination.long)}
+          />
           {/* Additional images */}
           <Grid container spacing={2} style={{ marginTop: "20px" }}>
             <Grid item xs={6}>
@@ -272,6 +301,7 @@ const DestinationDetails: React.FC = () => {
           </Grid>
         </CardContent>
       </Card>
+      <LoginDialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} />
     </Container>
   );
 };
