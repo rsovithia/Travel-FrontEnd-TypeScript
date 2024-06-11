@@ -254,7 +254,6 @@ const Navbar: React.FC = () => {
         body: JSON.stringify(newDestination),
       });
       if (response.ok) {
-        // Handle successful save
         setOpenCreateDialog(false);
       } else {
         console.error("Failed to save destination:", response.status);
@@ -558,7 +557,7 @@ const Navbar: React.FC = () => {
         onClose={() => setOpenCreateDialog(false)}
       >
         <DialogTitle>
-          {newDestination.id ? "Edit Destination" : "Add New Destination 2"}
+          {newDestination.id ? "Edit Destination" : "Add New Destination"}
         </DialogTitle>
         <DialogContent>
           <form>

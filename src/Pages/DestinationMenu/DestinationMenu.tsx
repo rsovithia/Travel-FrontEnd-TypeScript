@@ -37,6 +37,7 @@ interface ApiResponse {
     name: string;
     image1: string;
     description: string;
+    status: string;
   }[];
 }
 
@@ -66,7 +67,8 @@ const Destinations: React.FC = () => {
       });
       const result: ApiResponse = await response.json();
       console.log("Data fetched:", result);
-      const formattedProvinces = result.data.map((item) => ({
+      const filteredData = result.data.filter((item) => item.status === "approved");
+      const formattedProvinces = filteredData.map((item) => ({
         id: item.id,
         name: item.name,
         image: item.image1,
