@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, Rating } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import background_CoverPages from "../../assets/CoverPages/background_CoverPages.svg";
 import { EffectCoverflow, Pagination } from "swiper/modules";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import config from "../../Api/config";
 
 interface Province {
-  id: string; // Added id field to the Province interface
-  ranking: string;
+  id: string;
+  ranking: number;
   name: string;
   description: string;
   image1: string;
-  average_rating: string;
+  average_rating: number;
 }
 
 const CoverSection: React.FC = () => {
@@ -23,6 +24,7 @@ const CoverSection: React.FC = () => {
   const [selectedProvince, setSelectedProvince] = useState<Province | null>(
     null
   );
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
   const fetchTopView = async () => {
     try {
@@ -41,12 +43,12 @@ const CoverSection: React.FC = () => {
       console.log("API Response:", data);
 
       const provinces = data.data.map((item: any) => ({
-        id: item.destination.id, // Added id mapping
-        ranking: item.average_rating,
+        id: item.destination.id,
+        ranking: parseInt(item.average_rating),
         name: item.destination.name,
         description: item.destination.description,
         image1: item.destination.image1,
-        average_rating: item.average_rating,
+        average_rating: parseFloat(item.average_rating) / 2,
       }));
 
       return provinces;
@@ -74,6 +76,10 @@ const CoverSection: React.FC = () => {
     console.log("Selected Province ID:", province.id);
   };
 
+  const handleToggleDescription = () => {
+    setShowFullDescription(!showFullDescription);
+  };
+
   return (
     <Box
       sx={{
@@ -97,6 +103,17 @@ const CoverSection: React.FC = () => {
             "linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent)",
           zIndex: 1,
         },
+        "::after": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "200px",
+          background:
+            "linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent)",
+          zIndex: 1,
+        },
       }}
     >
       <Box sx={{ width: "90%", textAlign: "center" }}>
@@ -109,38 +126,59 @@ const CoverSection: React.FC = () => {
               gutterBottom
               display="flex"
               alignItems="center"
-              justifyContent="center"
+              justifyContent="left"
             >
               Top 5 Destinations
             </Typography>
-
             <Typography
-              marginBottom={10}
+              marginBottom={0}
               color={"white"}
               variant="h2"
               gutterBottom
               display="flex"
               alignItems="center"
-              justifyContent="center"
+              justifyContent="left"
             >
               in Cambodia
             </Typography>
+            <Box
+              sx={{
+                bgcolor: "white",
+                padding: "1px",
+                width: "50%",
+                marginBottom: 10,
+              }}
+            />
+
             {selectedProvince && (
               <Box
                 sx={{
-                  background: "rgba(255, 255, 255, 0.2)",
                   borderRadius: "15px",
-                  padding: "20px",
-                  height: "320px",
-                  boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+                  padding: "40px",
+                  width: "400px",
+                  height: "250px",
+                  boxShadow: "0 4px 30px rgba(0, 0, 0, 0.4)",
                   backdropFilter: "blur(5px)",
                   color: "white",
                 }}
               >
                 <Typography variant="h4" gutterBottom>
-                  {selectedProvince.ranking} {selectedProvince.name}
+                  {selectedProvince.name}
                 </Typography>
-                <Typography variant="subtitle1" gutterBottom>
+                <Rating
+                  name="average-rating"
+                  value={selectedProvince.average_rating}
+                  precision={0.5}
+                  readOnly
+                />
+                <Typography
+                  color={"white"}
+                  variant="h6"
+                  gutterBottom
+                  display="flex"
+                  alignItems="start"
+                  justifyContent="left"
+                >
                   {selectedProvince.description}
                 </Typography>
               </Box>
@@ -199,6 +237,7 @@ const CoverSection: React.FC = () => {
                           objectFit: "cover",
                           borderRadius: "15px",
                           width: "100%",
+                          boxSizing: "border-box",
                         }}
                       />
                     </Link>

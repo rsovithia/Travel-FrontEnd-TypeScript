@@ -63,12 +63,12 @@ const Navbar: React.FC = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 700);
   const [prevScrollPos, setPrevScrollPos] = useState(window.pageYOffset);
   const [visible, setVisible] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
   const [user, setUser] = useState<User | null>(null);
-
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [newDestination, setNewDestination] = useState<Destination>({
@@ -100,6 +100,7 @@ const Navbar: React.FC = () => {
     const handleScroll = () => {
       const currentScrollPos = window.pageYOffset;
       setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
+      setScrolled(currentScrollPos > 0);
       setPrevScrollPos(currentScrollPos);
       if (prevScrollPos < currentScrollPos && open) {
         setOpen(false);
@@ -265,6 +266,49 @@ const Navbar: React.FC = () => {
 
   const prevOpen = useRef(open);
 
+  const initMap = () => {
+    const map = new window.google.maps.Map(
+      document.getElementById("map") as HTMLElement,
+      {
+        center: { lat: 11.5564, lng: 104.9282 },
+        zoom: 8,
+      }
+    );
+
+    const marker = new window.google.maps.Marker({
+      position: { lat: 11.5564, lng: 104.9282 },
+      map,
+      draggable: true,
+    });
+
+    marker.addListener("dragend", (event: google.maps.MapMouseEvent) => {
+      const lat = event.latLng?.lat().toString() || "";
+      const lng = event.latLng?.lng().toString() || "";
+      setNewDestination((prevDestination) => ({
+        ...prevDestination,
+        lat,
+        long: lng,
+      }));
+    });
+
+    map.addListener("click", (event: google.maps.MapMouseEvent) => {
+      const lat = event.latLng?.lat().toString() || "";
+      const lng = event.latLng?.lng().toString() || "";
+      setNewDestination((prevDestination) => ({
+        ...prevDestination,
+        lat,
+        long: lng,
+      }));
+      marker.setPosition(event.latLng!);
+    });
+  };
+
+  useEffect(() => {
+    if (openCreateDialog) {
+      setTimeout(() => initMap(), 500);
+    }
+  }, [openCreateDialog]);
+
   return (
     <Grid
       container
@@ -272,22 +316,23 @@ const Navbar: React.FC = () => {
       justifyContent="space-between"
       className={`Navbar ${visible ? "visible" : "hidden"}`}
       style={{
-        background:
-          "linear-gradient(260deg, rgba(223, 110, 26, 0.8), rgba(237, 168, 33, 0.8))",
-        boxShadow: "0 5px 15px 0 rgba(0, 0, 0, 0.25)",
+        backgroundColor: scrolled ? "rgba(0, 0, 0, 0.9)" : "rgba(0, 0, 0, 1)",
+        backdropFilter: "blur(80px)",
+        boxShadow: scrolled ? "0 5px 15px 0 rgba(0, 0, 0, 0.9)" : "none",
         height: "80px",
         zIndex: 998,
         position: "fixed",
-        top: visible ? "20px" : "-80px",
+        top: "4px",
         left: "50%",
+        padding: "0 14px 0 70px",
         transform: "translateX(-50%)",
-        width: "98%",
+        width: "99.5%",
         borderRadius: "10px",
-        transition: "top 0.3s",
+        transition: "top 0.3s, background-color 0.3s, box-shadow 0.3s",
       }}
     >
       <Grid item>
-        <Typography sx={{ fontWeight: 600 }} variant="h5">
+        <Typography sx={{ fontWeight: 600, color: "white", fontSize: "26px" }}>
           Travel Logo
         </Typography>
       </Grid>
@@ -296,19 +341,41 @@ const Navbar: React.FC = () => {
         sx={{
           flexGrow: 1,
           display: "flex",
-          gap: "20px",
+          gap: "80px",
+          marginRight: "700px",
           justifyContent: "center",
         }}
       >
-        <Button color="inherit" component={Link} to="/">
-          Home
-        </Button>
-        <Button color="inherit" component={Link} to="/destinations">
-          Destinations
-        </Button>
-        <Button color="inherit" component={Link} to="/#">
-          Recommendation
-        </Button>
+        <Box>
+          <Typography
+            sx={{ fontWeight: 500, color: "white", fontSize: "18px" }}
+            component={Link}
+            to="/"
+            style={{ textDecoration: "none" }}
+          >
+            Home
+          </Typography>
+        </Box>
+        <Box>
+          <Typography
+            sx={{ fontWeight: 500, color: "white", fontSize: "18px" }}
+            component={Link}
+            to="/destinations"
+            style={{ textDecoration: "none" }}
+          >
+            Destinations
+          </Typography>
+        </Box>
+        <Box>
+          <Typography
+            sx={{ fontWeight: 500, color: "white", fontSize: "18px" }}
+            component={Link}
+            to="/#"
+            style={{ textDecoration: "none" }}
+          >
+            Recommendation
+          </Typography>
+        </Box>
       </Grid>
       <Grid item>
         <Box
@@ -385,6 +452,7 @@ const Navbar: React.FC = () => {
                                     fontSize={"20px"}
                                     fontWeight={600}
                                     variant="body1"
+                                    color={scrolled ? "white" : "black"}
                                   >
                                     {user.name}
                                   </Typography>
@@ -446,6 +514,7 @@ const Navbar: React.FC = () => {
                                     >
                                       Dashboard
                                     </Button>
+
                                     <Button
                                       type="button"
                                       className="logout"
@@ -512,19 +581,28 @@ const Navbar: React.FC = () => {
                   </Popper>
                 </>
               ) : (
-                <>
-                  <Button color="inherit" component={Link} to="/login">
+                <Box display={"flex"} gap={2}>
+                  <Button
+                    sx={{ color: scrolled ? "white" : "white" }}
+                    color="inherit"
+                    component={Link}
+                    to="/login"
+                  >
                     Login
                   </Button>
+                  <Box
+                    sx={{ bgcolor: "white", padding: "1px", height: "30px" }}
+                  />
                   <Button
                     variant="outlined"
+                    sx={{ color: scrolled ? "white" : "white" }}
                     color="inherit"
                     component={Link}
                     to="/register"
                   >
                     Register
                   </Button>
-                </>
+                </Box>
               )}
             </>
           )}
@@ -577,6 +655,7 @@ const Navbar: React.FC = () => {
               </Grid>
               <Grid item xs={6}>
                 <FormControl fullWidth>
+                  Province
                   <Select
                     labelId="province-select-label"
                     value={newDestination.province_id}
@@ -619,6 +698,7 @@ const Navbar: React.FC = () => {
               </Grid>
               <Grid item xs={6}>
                 <FormControl fullWidth>
+                  Category
                   <Select
                     labelId="category-select-label"
                     value={newDestination.category_id}
@@ -674,6 +754,12 @@ const Navbar: React.FC = () => {
                   value={newDestination.long}
                   onChange={handleChange}
                 />
+              </Grid>
+              <Grid item xs={12}>
+                <Box
+                  id="map"
+                  style={{ width: "100%", height: "400px", marginTop: "20px" }}
+                ></Box>
               </Grid>
               <Grid item xs={12}>
                 <Typography variant="subtitle1" gutterBottom>

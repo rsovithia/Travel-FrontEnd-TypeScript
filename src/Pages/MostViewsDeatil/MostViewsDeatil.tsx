@@ -43,7 +43,9 @@ const fetchtopview = async (): Promise<Recommendation[]> => {
 };
 
 export default function Home() {
-  const [recommendationsData, setRecommendationsData] = useState<Recommendation[]>([]);
+  const [recommendationsData, setRecommendationsData] = useState<
+    Recommendation[]
+  >([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,8 +62,7 @@ export default function Home() {
     <>
       <Box
         sx={{
-          padding: "20px",
-          marginTop: "40px",
+          bgcolor: "black",
         }}
       >
         <Box
@@ -69,7 +70,6 @@ export default function Home() {
             padding: "0px",
             display: "flex",
             justifyContent: "center",
-            marginTop: "20px",
             flexDirection: "column",
             alignItems: "center",
           }}
@@ -78,11 +78,12 @@ export default function Home() {
             sx={{ fontWeight: "600" }}
             gutterBottom
             variant="h5"
+            color={"white"}
             component="div"
           >
             Travel Recommendation
           </Typography>
-          <Typography>
+          <Typography >
             Travel app is the website that helps you to get your destination in
             Cambodia
           </Typography>

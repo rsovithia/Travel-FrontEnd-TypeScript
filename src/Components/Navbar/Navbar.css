@@ -1,30 +1,6 @@
-.Navbar {
-  display: flex;
-  background: linear-gradient(260deg, #eda821, #eda821);
-  align-items: center;
-  padding: 0 30px;
-  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.25);
-  height: 80px;
-  margin: 0;
-  width: 94%;
-  border-radius: 10px;
-  position: fixed;
+.navbar {
+  position: sticky;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 998;
-}
-
-.content {
-  margin-top: 100px; /* Adjust this value based on the height of the Navbar */
-}
-
-.body-shift {
-  overflow-x: hidden;
-}
-
-@media (max-width: 700px) {
-  .body-shift {
-    overflow: hidden;
-  }
+  z-index: 1000;
+  transition: top 0.3s;
 }

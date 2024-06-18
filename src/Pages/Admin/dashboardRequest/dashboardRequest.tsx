@@ -37,6 +37,10 @@ interface Destination {
 
 const fileUrl = config.fileUrl;
 
+const truncate = (str: string, maxLength: number) => {
+  return str.length > maxLength ? str.substring(0, maxLength) + "..." : str;
+};
+
 export default function DashboardRequest() {
   const [data, setData] = useState<Destination[]>([]);
   const [open, setOpen] = useState<boolean>(false);
@@ -108,7 +112,7 @@ export default function DashboardRequest() {
   };
 
   return (
-    <Box>
+    <Box sx={{ padding: "20px" }}>
       <Typography variant="h4" gutterBottom>
         Pending Destinations
       </Typography>
@@ -139,24 +143,36 @@ export default function DashboardRequest() {
               >
                 <TableCell>{destination.id}</TableCell>
                 <TableCell>{destination.name}</TableCell>
-                <TableCell>
+                <TableCell sx={{ display: "flex", gap: 1 }}>
                   <img
                     src={fileUrl + destination.image1}
                     alt={`${destination.name} image1`}
-                    style={{ width: "50px" }}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "5px",
+                    }}
                   />
                   <img
                     src={fileUrl + destination.image2}
                     alt={`${destination.name} image2`}
-                    style={{ width: "50px" }}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "5px",
+                    }}
                   />
                   <img
                     src={fileUrl + destination.image3}
                     alt={`${destination.name} image3`}
-                    style={{ width: "50px" }}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "5px",
+                    }}
                   />
                 </TableCell>
-                <TableCell>{destination.description}</TableCell>
+                <TableCell>{truncate(destination.description, 40)}</TableCell>
                 <TableCell>{destination.province_id}</TableCell>
                 <TableCell>{destination.lat}</TableCell>
                 <TableCell>{destination.long}</TableCell>
@@ -168,7 +184,19 @@ export default function DashboardRequest() {
                 </TableCell>
                 <TableCell>{destination.category_id}</TableCell>
                 <TableCell>{destination.user_id}</TableCell>
-                <TableCell>{destination.status}</TableCell>
+                <TableCell>
+                  <Box
+                    sx={{
+                      bgcolor: "red",
+                      padding: "6px",
+
+                      borderRadius: "14px",
+                    }}
+                  >
+                    {" "}
+                    {destination.status}
+                  </Box>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -180,13 +208,17 @@ export default function DashboardRequest() {
         <DialogContent>
           {selectedDestination && (
             <>
-              <DialogContentText>ID: {selectedDestination.id}</DialogContentText>
-              <DialogContentText>Name: {selectedDestination.name}</DialogContentText>
+              <DialogContentText>
+                ID: {selectedDestination.id}
+              </DialogContentText>
+              <DialogContentText>
+                Name: {selectedDestination.name}
+              </DialogContentText>
               <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
                 <img
                   src={fileUrl + selectedDestination.image1}
                   alt={`${selectedDestination.name} image1`}
-                  style={{ width: "50px" }}
+                  style={{ width: "50px", height: "50px" }}
                 />
                 <img
                   src={fileUrl + selectedDestination.image2}
@@ -199,19 +231,35 @@ export default function DashboardRequest() {
                   style={{ width: "50px" }}
                 />
               </Box>
-              <DialogContentText>Description: {selectedDestination.description}</DialogContentText>
-              <DialogContentText>Province ID: {selectedDestination.province_id}</DialogContentText>
-              <DialogContentText>Latitude: {selectedDestination.lat}</DialogContentText>
-              <DialogContentText>Longitude: {selectedDestination.long}</DialogContentText>
               <DialogContentText>
-                Created At: {new Date(selectedDestination.created_at).toLocaleDateString()}
+                Description: {truncate(selectedDestination.description, 50)}
               </DialogContentText>
               <DialogContentText>
-                Updated At: {new Date(selectedDestination.updated_at).toLocaleDateString()}
+                Province ID: {selectedDestination.province_id}
               </DialogContentText>
-              <DialogContentText>Category ID: {selectedDestination.category_id}</DialogContentText>
-              <DialogContentText>User ID: {selectedDestination.user_id}</DialogContentText>
-              <DialogContentText>Status: {selectedDestination.status}</DialogContentText>
+              <DialogContentText>
+                Latitude: {selectedDestination.lat}
+              </DialogContentText>
+              <DialogContentText>
+                Longitude: {selectedDestination.long}
+              </DialogContentText>
+              <DialogContentText>
+                Created At:{" "}
+                {new Date(selectedDestination.created_at).toLocaleDateString()}
+              </DialogContentText>
+              <DialogContentText>
+                Updated At:{" "}
+                {new Date(selectedDestination.updated_at).toLocaleDateString()}
+              </DialogContentText>
+              <DialogContentText>
+                Category ID: {selectedDestination.category_id}
+              </DialogContentText>
+              <DialogContentText>
+                User ID: {selectedDestination.user_id}
+              </DialogContentText>
+              <DialogContentText>
+                Status: {selectedDestination.status}
+              </DialogContentText>
             </>
           )}
         </DialogContent>

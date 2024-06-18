@@ -4,7 +4,7 @@ import { Toolbar, Typography, Box } from "@mui/material";
 export default function Header() {
  
   return (
-    <Box sx={{ margin:"20px"} }>
+    <Box sx={{ margin:"10px"} }>
       <Box
         sx={{
           bgcolor: "#df6e1a",
@@ -14,7 +14,7 @@ export default function Header() {
       >
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Dashboard
+            Dashboard 
           </Typography>
         </Toolbar>
       </Box>

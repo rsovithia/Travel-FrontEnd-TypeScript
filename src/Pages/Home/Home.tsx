@@ -59,9 +59,9 @@ export default function Home() {
   return (
     <>
       <CoverSection />
-      <RecommendHome />
-      <DetailHomePages />
       <MostViewsDeatil />
+      <DetailHomePages />
+      <RecommendHome />
       <Footer />
     </>
   );

@@ -18,6 +18,9 @@ import {
 import { Link } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import config from "../../Api/config";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import Footer from "../../Components/Footer/Footer";
 
 interface Province {
   id: number;
@@ -67,7 +70,9 @@ const Destinations: React.FC = () => {
       });
       const result: ApiResponse = await response.json();
       console.log("Data fetched:", result);
-      const filteredData = result.data.filter((item) => item.status === "approved");
+      const filteredData = result.data.filter(
+        (item) => item.status === "approved"
+      );
       const formattedProvinces = filteredData.map((item) => ({
         id: item.id,
         name: item.name,
@@ -84,7 +89,7 @@ const Destinations: React.FC = () => {
     try {
       const query = new URLSearchParams(searchParams).toString();
       console.log("Fetching categories with params:", query);
-      const response = await fetch(`${config.apiUrl}/auth/category?${query}`, {
+      const response = await fetch(`${config.apiUrl}/auth/category`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${config.accessToken}`,
@@ -162,7 +167,9 @@ const Destinations: React.FC = () => {
                 borderRadius: "8px",
               }}
             >
-              <Typography fontWeight={600} variant="h4">ALL Destination</Typography>
+              <Typography fontWeight={600} variant="h4">
+                All Destination
+              </Typography>
             </Box>
             <Box
               sx={{
@@ -352,6 +359,7 @@ const Destinations: React.FC = () => {
           ))}
         </Grid>
       </Container>
+      <Footer />
     </>
   );
 };

@@ -268,7 +268,7 @@ const Navbar: React.FC = () => {
               {user.name}
             </Typography>
             <Typography fontSize="14px" variant="body2" color="textSecondary">
-              {user.id}
+              {user.email}
             </Typography>
           </>
         )}
@@ -473,6 +473,13 @@ const Navbar: React.FC = () => {
                         variant="body2"
                         color="textSecondary"
                         component="p"
+                        sx={{
+                          display: "-webkit-box",
+                          WebkitBoxOrient: "vertical",
+                          WebkitLineClamp: 3,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
                       >
                         Description: {item.destination?.description || "N/A"}
                       </Typography>

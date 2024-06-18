@@ -2,24 +2,30 @@ import React, { useState } from "react";
 import "./Login.css";
 // import Logo from "../../assets/Images/logo_itc.svg";
 import { useNavigate } from "react-router-dom";
-import { authenticate, logout } from "../../Auth/auth";
+import { authenticate } from "../../Auth/auth";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    setLoading(true);
     try {
       const response = await authenticate(email, password);
       console.log("Login successful:", response);
 
       // Navigate based on user role
       if (response.role === "admin") {
+        setLoading(false);
         navigate("/dashboard");
       } else {
+        setLoading(false);
         navigate("/");
       }
+
+      window.location.reload();
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -28,11 +34,6 @@ const Login: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleLogin();
-  };
-
-  const handleLogout = () => {
-    logout();
-    navigate("/login"); // Adjust this to your login route
   };
 
   return (
@@ -69,25 +70,7 @@ const Login: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             <button type="submit" className="submit">
-              Login
-            </button>
-            <button
-              type="button"
-              className="logout"
-              onClick={handleLogout}
-              style={{
-                height: "40px",
-                width: "100px",
-                backgroundColor: "#DF6E1A",
-                borderRadius: "20px",
-                border: "1px solid #FFFFFF",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginTop: "10px",
-              }}
-            >
-              Logout
+              {loading ? <p>Loading...</p> : <p> Login</p>}
             </button>
           </div>
         </form>
