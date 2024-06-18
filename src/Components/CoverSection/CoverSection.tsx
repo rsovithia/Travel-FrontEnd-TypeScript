@@ -7,7 +7,6 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import background_CoverPages from "../../assets/CoverPages/background_CoverPages.svg";
 import { EffectCoverflow, Pagination } from "swiper/modules";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import config from "../../Api/config";
 
 interface Province {
@@ -24,8 +23,7 @@ const CoverSection: React.FC = () => {
   const [selectedProvince, setSelectedProvince] = useState<Province | null>(
     null
   );
-  const [showFullDescription, setShowFullDescription] = useState(false);
-
+   
   const fetchTopView = async () => {
     try {
       const response = await fetch(`${config.apiUrl}/destination/topRating`, {
@@ -76,9 +74,7 @@ const CoverSection: React.FC = () => {
     console.log("Selected Province ID:", province.id);
   };
 
-  const handleToggleDescription = () => {
-    setShowFullDescription(!showFullDescription);
-  };
+ 
 
   return (
     <Box

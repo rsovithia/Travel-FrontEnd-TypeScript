@@ -73,7 +73,7 @@ const AdminTable: React.FC = () => {
     false,
     false,
   ]);
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [, setUploadedImages] = useState<string[]>([]);
 
   const fileUrl = config.fileUrl;
   const navigate = useNavigate();
@@ -276,7 +276,7 @@ const AdminTable: React.FC = () => {
     }
   };
 
-  const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  const StyledTableCell = styled(TableCell)(() => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: "#DEDEDE",
       border: "none",

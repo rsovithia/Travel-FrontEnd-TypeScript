@@ -64,7 +64,6 @@ const Navbar: React.FC = () => {
   const [prevScrollPos, setPrevScrollPos] = useState(window.pageYOffset);
   const [visible, setVisible] = useState(true);
   const [scrolled, setScrolled] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
@@ -192,10 +191,7 @@ const Navbar: React.FC = () => {
     logout();
     window.location.reload();
   };
-
-  const handleDialogOpen = () => {
-    setDialogOpen(true);
-  };
+ 
 
   const handleDialogClose = () => {
     setDialogOpen(false);

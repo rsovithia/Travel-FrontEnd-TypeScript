@@ -68,6 +68,11 @@ const DestinationDetails: React.FC = () => {
 
   useEffect(() => {
     const getData = async () => {
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await fetch(`${config.apiUrl}/destination/${id}`, {
           method: "GET",
@@ -130,7 +135,9 @@ const DestinationDetails: React.FC = () => {
     } else {
       await addFavorite();
     }
-    await getCheckTheFavorit(parseInt(id)); // Check the favorites status after every click
+    if (id) {
+      await getCheckTheFavorit(parseInt(id)); // Check the favorites status after every click
+    }
   };
 
   const addFavorite = async () => {
@@ -215,7 +222,7 @@ const DestinationDetails: React.FC = () => {
   };
 
   const handleRatingChange = async (
-    event: React.ChangeEvent<{}>,
+    _event: React.ChangeEvent<{}>,
     newValue: number | null
   ) => {
     if (!authenticated) {

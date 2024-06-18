@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -83,7 +83,7 @@ export default function Home() {
           >
             Travel Recommendation
           </Typography>
-          <Typography >
+          <Typography>
             Travel app is the website that helps you to get your destination in
             Cambodia
           </Typography>
@@ -95,7 +95,7 @@ export default function Home() {
             {recommendationsData.map((recommendation, index) => {
               if (!recommendation || !recommendation.destination) return null;
 
-              const { image1, name, description } = recommendation.destination;
+              const { image1, name } = recommendation.destination;
 
               return (
                 <Grid item key={index}>

@@ -18,8 +18,6 @@ import {
 import { Link } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import config from "../../Api/config";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import Footer from "../../Components/Footer/Footer";
 
 interface Province {
