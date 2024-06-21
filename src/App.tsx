@@ -16,9 +16,8 @@ import Register from "./Pages/Register/Register";
 
 import UserPages from "./Pages/UserPages/UserPages";
 import DashboardRequest from "./Pages/Admin/dashboardRequest/dashboardRequest";
+import RecommendationPages from "./Pages/RecommendationPages/RecommendationPages";
 // import DestinationDetails from "./Pages/DestinationDetails/DestinationDetails";
-
-
 
 function App() {
   return (
@@ -31,6 +30,15 @@ function App() {
               <>
                 <Navbar />
                 <Home />
+              </>
+            }
+          />
+          <Route
+            path="/RecommendationPages"
+            element={
+              <>
+                <Navbar />
+                <RecommendationPages />
               </>
             }
           />

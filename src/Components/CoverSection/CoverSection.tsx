@@ -23,7 +23,7 @@ const CoverSection: React.FC = () => {
   const [selectedProvince, setSelectedProvince] = useState<Province | null>(
     null
   );
-   
+
   const fetchTopView = async () => {
     try {
       const response = await fetch(`${config.apiUrl}/destination/topRating`, {
@@ -73,8 +73,6 @@ const CoverSection: React.FC = () => {
   const handleProvinceClick = (province: Province) => {
     console.log("Selected Province ID:", province.id);
   };
-
- 
 
   return (
     <Box

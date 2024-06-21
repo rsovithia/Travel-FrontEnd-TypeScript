@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
  
 const Footer: React.FC = () => {
   return (
-    <div className="footer-container">
+    <div style={{ marginTop:"90px"}} className="footer-container">
       {/* <section className="footer-subscription">
           <p className="footer-subscription-heading">
             Join the Adventure newsletter to receive our best vacation deals

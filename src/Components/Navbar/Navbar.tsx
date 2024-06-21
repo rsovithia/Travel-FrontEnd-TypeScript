@@ -366,7 +366,7 @@ const Navbar: React.FC = () => {
           <Typography
             sx={{ fontWeight: 500, color: "white", fontSize: "18px" }}
             component={Link}
-            to="/#"
+            to="/RecommendationPages"
             style={{ textDecoration: "none" }}
           >
             Recommendation

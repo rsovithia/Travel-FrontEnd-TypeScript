@@ -6,22 +6,14 @@ import {
   CardMedia,
   Grid,
   Box,
-  TextField,
-  Button,
-  InputAdornment,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   SelectChangeEvent,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import SearchIcon from "@mui/icons-material/Search";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import config from "../../Api/config";
 import Footer from "../../Components/Footer/Footer";
- 
+
 interface Province {
   id: number;
   name: string;
@@ -79,7 +71,7 @@ const Destinations: React.FC = () => {
         ...searchParams,
       }).toString();
       console.log("Fetching data with params:", query);
-      const response = await fetch(`${config.apiUrl}/destination?${query}`, {
+      const response = await fetch(`${config.apiUrl}/recommend-to-user`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${config.accessToken}`,
@@ -146,26 +138,6 @@ const Destinations: React.FC = () => {
     getFavorites();
   }, [selectedCategory, selectedProvince]);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-    console.log("Search term:", event.target.value);
-  };
-
-  const handleSearch = () => {
-    console.log("Search button clicked. Term:", searchTerm);
-    getData({ name: searchTerm });
-  };
-
-  const handleCategoryChange = (event: SelectChangeEvent<string | number>) => {
-    setSelectedCategory(event.target.value as string | number);
-    console.log("Selected category:", event.target.value);
-  };
-
-  const handleProvinceChange = (event: SelectChangeEvent<string | number>) => {
-    setSelectedProvince(event.target.value as string | number);
-    console.log("Selected province:", event.target.value);
-  };
-
   return (
     <>
       <Box
@@ -207,7 +179,7 @@ const Destinations: React.FC = () => {
               }}
             >
               <Typography fontWeight={600} variant="h4">
-                Search Destination
+                Recommendation
               </Typography>
             </Box>
             <Box
@@ -225,139 +197,7 @@ const Destinations: React.FC = () => {
                 alignItems: "center",
                 width: "600px",
               }}
-            >
-              <Box sx={{ display: "flex", width: "100%" }}>
-                <TextField
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  placeholder="Search Destination"
-                  variant="outlined"
-                  sx={{
-                    borderRadius: "25px 0 0 25px",
-                    flexGrow: 1,
-                    border: "none",
-                    "& .MuiOutlinedInput-root": {
-                      borderRadius: "25px 0 0 25px",
-                      border: "none",
-                      "& fieldset": {
-                        border: "none",
-                      },
-                    },
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  color="success"
-                  sx={{
-                    borderRadius: "0 25px 25px 0",
-                    padding: "14px 24px",
-                    backgroundColor: "#D7A759",
-                    border: "none",
-                    "&:hover": {
-                      backgroundColor: "#B08A5C", // Change this to your desired hover color
-                    },
-                  }}
-                  onClick={handleSearch}
-                >
-                  Search
-                </Button>
-              </Box>
-            </Box>
-            <Box
-              sx={{
-                position: "absolute",
-                top: "80%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                backgroundColor: "white",
-                padding: "10px",
-                gap: "20px",
-                width: "64%",
-                borderRadius: "25px",
-                display: "flex",
-              }}
-            >
-              <FormControl
-                fullWidth
-                sx={{
-                  borderRadius: "25px",
-                  boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.2)",
-                }}
-              >
-                <InputLabel id="category1-select-label">Province</InputLabel>
-                <Select
-                  sx={{
-                    border: "none",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none",
-                    },
-                  }}
-                  labelId="category1-select-label"
-                  value={selectedProvince}
-                  onChange={handleProvinceChange}
-                >
-                  <MenuItem value="1">Banteay Meanchey</MenuItem>
-                  <MenuItem value="2">Kampong Cham</MenuItem>
-                  <MenuItem value="3">Tboung Khmum</MenuItem>
-                  <MenuItem value="4">Battambang</MenuItem>
-                  <MenuItem value="5">Kampong Chhnang</MenuItem>
-                  <MenuItem value="6">Kampong Speu</MenuItem>
-                  <MenuItem value="7">Kampong Thom</MenuItem>
-                  <MenuItem value="8">Kampot</MenuItem>
-                  <MenuItem value="9">Kandal</MenuItem>
-                  <MenuItem value="10">Koh Kong</MenuItem>
-                  <MenuItem value="11">Kratié</MenuItem>
-                  <MenuItem value="12">Mondulkiri</MenuItem>
-                  <MenuItem value="13">Phnom Penh</MenuItem>
-                  <MenuItem value="14">Preah Vihear</MenuItem>
-                  <MenuItem value="15">Prey Veng</MenuItem>
-                  <MenuItem value="16">Pursat</MenuItem>
-                  <MenuItem value="17">Ratanakiri</MenuItem>
-                  <MenuItem value="18">Siem Reap</MenuItem>
-                  <MenuItem value="19">Preah Sihanouk</MenuItem>
-                  <MenuItem value="20">Stung Treng</MenuItem>
-                  <MenuItem value="21">Svay Rieng</MenuItem>
-                  <MenuItem value="22">Takéo</MenuItem>
-                  <MenuItem value="23">Oddar Meanchey</MenuItem>
-                  <MenuItem value="24">Kep</MenuItem>
-                  <MenuItem value="25">Pailin</MenuItem>
-                  <MenuItem value="26">Tboung Khmum</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl
-                fullWidth
-                sx={{
-                  borderRadius: "25px",
-                  boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.2)",
-                }}
-              >
-                <InputLabel id="category2-select-label">Category</InputLabel>
-                <Select
-                  sx={{
-                    border: "none",
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      border: "none",
-                    },
-                  }}
-                  labelId="category2-select-label"
-                  value={selectedCategory}
-                  onChange={handleCategoryChange}
-                >
-                  {categories.map((category) => (
-                    <MenuItem key={category.id} value={category.id}>
-                      {category.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
+            ></Box>
           </Box>
         </Card>
       </Box>
