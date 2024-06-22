@@ -67,8 +67,8 @@ export default function Home() {
       >
         <Box
           sx={{
-            padding: "0px",
             display: "flex",
+            padding: "20px",
             justifyContent: "center",
             flexDirection: "column",
             alignItems: "center",
@@ -77,15 +77,20 @@ export default function Home() {
           <Typography
             sx={{ fontWeight: "600" }}
             gutterBottom
-            variant="h5"
+            variant="h3"
             color={"white"}
             component="div"
           >
-            Travel Recommendation
+            The Most Views Destination
           </Typography>
-          <Typography>
-            Travel app is the website that helps you to get your destination in
-            Cambodia
+          <Typography
+          
+            gutterBottom
+            variant="h6"
+            color={"white"}
+         
+          >
+          Here is the most Destination get the views in website
           </Typography>
         </Box>
         <Box
@@ -100,7 +105,11 @@ export default function Home() {
               return (
                 <Grid item key={index}>
                   <Card
-                    sx={{ maxWidth: "300px", backgroundColor: "transparent" }}
+                    sx={{
+                      maxWidth: "300px",
+                      backgroundColor: "transparent",
+                      padding: "10px",
+                    }}
                   >
                     <CardActionArea>
                       {image1 && (
@@ -113,7 +122,7 @@ export default function Home() {
                         />
                       )}
                       <CardContent sx={{ backgroundColor: "transparent" }}>
-                        <Typography gutterBottom variant="h5" component="div">
+                        <Typography sx={{ color:"white"}} gutterBottom variant="h5" component="div">
                           {name}
                         </Typography>
                       </CardContent>

@@ -105,7 +105,22 @@ const Destinations: React.FC = () => {
                 borderRadius: "8px",
               }}
             >
-              <Button onClick={fetchDestinations}>Generate</Button>
+              <Button 
+                     sx={{
+                      background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+                      borderRadius: "50px",
+                      border: 0,
+                      color: "white",
+                      height: 48,
+                      padding: "0 30px",
+                      boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
+                      transition: "transform 0.3s ease-in-out",
+                      "&:hover": {
+                        background: "linear-gradient(45deg, #FF8E53 30%, #FE6B8B 90%)",
+                        transform: "scale(1.05)",
+                      },
+                    }}
+              onClick={fetchDestinations}>Generate</Button>
             </Box>
           </Box>
         </Card>
@@ -122,7 +137,10 @@ const Destinations: React.FC = () => {
           <CircularProgress />
         </Box>
       ) : (
-        <Container sx={{ marginTop: "40px", marginBottom: "40px" }} maxWidth="xl">
+        <Container
+          sx={{ marginTop: "40px", marginBottom: "40px" }}
+          maxWidth="xl"
+        >
           <Grid container spacing={3}>
             {destinations.map((destination) => (
               <Grid item xs={12} sm={6} md={4} lg={2.4} key={destination.id}>
@@ -135,7 +153,7 @@ const Destinations: React.FC = () => {
                     sx={{
                       borderRadius: "14px",
                       transition: "transform 0.3s ease",
-                      animation: 'fadeIn 0.5s ease-in-out',
+                      animation: "fadeIn 0.5s ease-in-out",
                       "&:hover": {
                         transform: "scale(1.02)",
                       },
@@ -174,6 +192,5 @@ const Destinations: React.FC = () => {
     </>
   );
 };
-
 
 export default Destinations;

@@ -166,12 +166,19 @@ const CoverSection: React.FC = () => {
                   readOnly
                 />
                 <Typography
-                  color={"white"}
+                  color="white"
                   variant="h6"
                   gutterBottom
-                  display="flex"
-                  alignItems="start"
-                  justifyContent="left"
+                  sx={{
+                    display: "-webkit-box",
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    WebkitLineClamp: 5,
+                    lineClamp: 5,
+                    alignItems: "start",
+                    justifyContent: "left",
+                  }}
                 >
                   {selectedProvince.description}
                 </Typography>
@@ -211,6 +218,7 @@ const CoverSection: React.FC = () => {
                     sx={{
                       position: "relative",
                       borderRadius: "15px",
+                    margin:"10px",
                       overflow: "hidden",
                       transition: "transform 0.3s, box-shadow 0.3s",
                       "&:hover": {
@@ -227,7 +235,7 @@ const CoverSection: React.FC = () => {
                         src={fileUrl + province.image1}
                         alt={province.name}
                         style={{
-                          height: 600,
+                          height: 500,
                           objectFit: "cover",
                           borderRadius: "15px",
                           width: "100%",
