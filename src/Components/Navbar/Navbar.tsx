@@ -28,6 +28,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 import config from "../../Api/config";
+import Logo from "../../assets/logo.svg";
+
 import { logout } from "../../Auth/auth";
 
 interface User {
@@ -191,7 +193,6 @@ const Navbar: React.FC = () => {
     logout();
     window.location.reload();
   };
- 
 
   const handleDialogClose = () => {
     setDialogOpen(false);
@@ -328,9 +329,19 @@ const Navbar: React.FC = () => {
       }}
     >
       <Grid item>
-        <Typography sx={{ fontWeight: 600, color: "white", fontSize: "26px" }}>
-          Travel Logo
-        </Typography>
+        <Box display="flex" alignItems="center">
+          <img src={Logo} alt="Logo" style={{ width: 50, height: 50 }} />
+          <Typography
+            sx={{
+              fontWeight: 600,
+              color: "white",
+              fontSize: "26px",
+              marginLeft: "10px",
+            }}
+          >
+            Smart Voyage
+          </Typography>
+        </Box>
       </Grid>
       <Grid
         item
@@ -338,7 +349,7 @@ const Navbar: React.FC = () => {
           flexGrow: 1,
           display: "flex",
           gap: "80px",
-          marginRight: "700px",
+          marginLeft: "700px",
           justifyContent: "center",
         }}
       >
@@ -370,6 +381,16 @@ const Navbar: React.FC = () => {
             style={{ textDecoration: "none" }}
           >
             Recommendation
+          </Typography>
+        </Box>
+        <Box>
+          <Typography
+            sx={{ fontWeight: 500, color: "white", fontSize: "18px" }}
+            component={Link}
+            to="/"
+            style={{ textDecoration: "none" }}
+          >
+            About Us
           </Typography>
         </Box>
       </Grid>

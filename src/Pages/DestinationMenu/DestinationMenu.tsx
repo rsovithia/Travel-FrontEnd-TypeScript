@@ -21,7 +21,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import config from "../../Api/config";
 import Footer from "../../Components/Footer/Footer";
- 
+
 interface Province {
   id: number;
   name: string;
@@ -62,7 +62,7 @@ interface Favorite {
 const fileUrl = config.fileUrl;
 
 const Destinations: React.FC = () => {
-  const [provinces, setProvinces] = useState<Province[]>([]);
+ 
   const [categories, setCategories] = useState<Category[]>([]);
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -303,6 +303,9 @@ const Destinations: React.FC = () => {
                   value={selectedProvince}
                   onChange={handleProvinceChange}
                 >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
                   <MenuItem value="1">Banteay Meanchey</MenuItem>
                   <MenuItem value="2">Kampong Cham</MenuItem>
                   <MenuItem value="3">Tboung Khmum</MenuItem>
@@ -350,6 +353,9 @@ const Destinations: React.FC = () => {
                   value={selectedCategory}
                   onChange={handleCategoryChange}
                 >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
                   {categories.map((category) => (
                     <MenuItem key={category.id} value={category.id}>
                       {category.name}
@@ -417,18 +423,18 @@ const Destinations: React.FC = () => {
                     </Typography>
                     <Box sx={{ display: "flex", gap: "10px" }}>
                       <Typography fontWeight={600} variant="body2">
-                        Category:{" "}
-                      </Typography>
-                      <Typography variant="body2">
-                        {destination.category.name}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", gap: "10px" }}>
-                      <Typography fontWeight={600} variant="body2">
                         Province:{" "}
                       </Typography>
                       <Typography variant="body2">
                         {destination.province.name}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", gap: "10px" }}>
+                      <Typography fontWeight={600} variant="body2">
+                        Category:{" "}
+                      </Typography>
+                      <Typography variant="body2">
+                        {destination.category.name}
                       </Typography>
                     </Box>
 

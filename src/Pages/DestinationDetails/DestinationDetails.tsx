@@ -114,7 +114,7 @@ const DestinationDetails: React.FC = () => {
   const [loginDialogOpen, setLoginDialogOpen] = useState<boolean>(false);
   const [comments, setComments] = useState<string>("");
   const [likedGoods, setLikedGoods] = useState<LikedGood[]>([]);
-  const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [, setIsLiked] = useState<boolean>(false);
   const [openRatingDialog, setOpenRatingDialog] = useState<boolean>(false);
   const [openCommentDialog, setOpenCommentDialog] = useState<boolean>(false);
   const [tempRating, setTempRating] = useState<number | null>(null);
@@ -122,7 +122,7 @@ const DestinationDetails: React.FC = () => {
   const [submittedComments, setSubmittedComments] = useState<
     SubmittedComment[]
   >([]);
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const [thumbsSwiper] = useState(null);
 
   const email = "Vithiasokh22@gmail.com"; // Fixed email for local storage check
 
@@ -343,7 +343,7 @@ const DestinationDetails: React.FC = () => {
   };
 
   const handleRatingChange = (
-    event: React.ChangeEvent<{}>,
+    _event: React.ChangeEvent<{}>,
     newValue: number | null
   ) => {
     if (!authenticated) {
