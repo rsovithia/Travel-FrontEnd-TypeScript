@@ -41,9 +41,16 @@ interface Destination {
   image3: string | null;
   created_at: string;
   updated_at: string;
+  category?: { id: number; name: string };
+  province?: { id: number; name: string };
 }
 
 interface Category {
+  id: number;
+  name: string;
+}
+
+interface Province {
   id: number;
   name: string;
 }
@@ -52,6 +59,7 @@ const AdminTable: React.FC = () => {
   const [data, setData] = useState<Destination[]>([]);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [provinces, setProvinces] = useState<Province[]>([]);
   const [selectedDestinationId, setSelectedDestinationId] = useState<
     number | null
   >(null);
@@ -81,6 +89,7 @@ const AdminTable: React.FC = () => {
   useEffect(() => {
     getData();
     fetchCategories();
+    fetchProvinces();
   }, []);
 
   const getData = async () => {
@@ -91,8 +100,10 @@ const AdminTable: React.FC = () => {
           Authorization: `Bearer ${config.accessToken}`,
         },
       });
+      console.log("Fetching destinations...");
       if (response.ok) {
         const jsonData = await response.json();
+        console.log("Destinations fetched successfully:", jsonData);
         setData(jsonData.data);
       } else {
         console.error("Failed to fetch data:", response.status);
@@ -110,14 +121,37 @@ const AdminTable: React.FC = () => {
           Authorization: `Bearer ${config.accessToken}`,
         },
       });
+      console.log("Fetching categories...");
       if (response.ok) {
         const category = await response.json();
+        console.log("Categories fetched successfully:", category);
         setCategories(category.data);
       } else {
         console.error("Failed to fetch categories:", response.status);
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchProvinces = async () => {
+    try {
+      const response = await fetch(`${config.apiUrl}/admin/province`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
+      console.log("Fetching provinces...");
+      if (response.ok) {
+        const province = await response.json();
+        console.log("Provinces fetched successfully:", province);
+        setProvinces(province.data);
+      } else {
+        console.error("Failed to fetch provinces:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching provinces:", error);
     }
   };
 
@@ -157,8 +191,10 @@ const AdminTable: React.FC = () => {
           Authorization: `Bearer ${config.accessToken}`,
         },
       });
+      console.log(`Fetching destination with ID: ${id}...`);
       if (response.ok) {
         const destinationData = await response.json();
+        console.log("Destination fetched successfully:", destinationData);
         setNewDestination(destinationData.data);
       } else {
         console.error("Failed to fetch destination:", response.status);
@@ -180,7 +216,9 @@ const AdminTable: React.FC = () => {
           Authorization: `Bearer ${config.accessToken}`,
         },
       });
+      console.log(`Removing destination with ID: ${id}...`);
       if (response.ok) {
+        console.log("Destination removed successfully");
         getData();
       } else {
         console.error("Failed to delete destination:", response.status);
@@ -241,7 +279,9 @@ const AdminTable: React.FC = () => {
         },
         body: JSON.stringify(newDestination),
       });
+      console.log("Adding new destination...", newDestination);
       if (response.ok) {
+        console.log("Destination added successfully");
         getData();
         handleCloseDialog();
       } else {
@@ -265,7 +305,12 @@ const AdminTable: React.FC = () => {
           body: JSON.stringify(newDestination),
         }
       );
+      console.log(
+        `Updating destination with ID: ${selectedDestinationId}...`,
+        newDestination
+      );
       if (response.ok) {
+        console.log("Destination updated successfully");
         getData();
         handleCloseDialog();
       } else {
@@ -346,7 +391,7 @@ const AdminTable: React.FC = () => {
                   <StyledTableCell>Description</StyledTableCell>
                   <StyledTableCell>Province</StyledTableCell>
                   <StyledTableCell>Category</StyledTableCell>
-                  <StyledTableCell>Location</StyledTableCell>
+
                   <StyledTableCell>Created At</StyledTableCell>
                   <StyledTableCell>Updated At</StyledTableCell>
                   <StyledTableCell>Action</StyledTableCell>
@@ -404,11 +449,9 @@ const AdminTable: React.FC = () => {
                     >
                       {row.description}
                     </StyledTableCell>
-                    <StyledTableCell>{row.province_id}</StyledTableCell>
-                    <StyledTableCell>{row.category_id}</StyledTableCell>
-                    <StyledTableCell>
-                      {row.lat}, {row.long}
-                    </StyledTableCell>
+                    <StyledTableCell>{row.province?.name}</StyledTableCell>
+                    <StyledTableCell>{row.category?.name}</StyledTableCell>
+
                     <StyledTableCell>
                       {new Date(row.created_at).toLocaleDateString()}
                     </StyledTableCell>
