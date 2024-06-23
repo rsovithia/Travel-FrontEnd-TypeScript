@@ -59,7 +59,7 @@ const AdminTable: React.FC = () => {
   const [data, setData] = useState<Destination[]>([]);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [provinces, setProvinces] = useState<Province[]>([]);
+  const [, setProvinces] = useState<Province[]>([]);
   const [selectedDestinationId, setSelectedDestinationId] = useState<
     number | null
   >(null);
@@ -410,6 +410,7 @@ const AdminTable: React.FC = () => {
                             alt="Destination"
                             style={{
                               width: 40,
+                              borderRadius: "4px",
                               height: 40,
                               marginRight: "10px",
                             }}
@@ -422,6 +423,7 @@ const AdminTable: React.FC = () => {
                             style={{
                               width: 40,
                               height: 40,
+                              borderRadius: "4px",
                               marginRight: "10px",
                             }}
                           />
@@ -432,6 +434,7 @@ const AdminTable: React.FC = () => {
                             alt="Destination"
                             style={{
                               width: 40,
+                              borderRadius: "4px",
                               height: 40,
                               marginRight: "10px",
                             }}
@@ -560,7 +563,8 @@ const AdminTable: React.FC = () => {
                   value={newDestination.lat}
                   onChange={handleChange}
                 />
-              </Grid>
+              </Grid>{" "}
+              Images
               <Grid item xs={6}>
                 <TextField
                   margin="dense"

@@ -62,7 +62,6 @@ interface Favorite {
 const fileUrl = config.fileUrl;
 
 const Destinations: React.FC = () => {
- 
   const [categories, setCategories] = useState<Category[]>([]);
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);

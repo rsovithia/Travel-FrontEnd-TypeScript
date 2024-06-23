@@ -14,6 +14,8 @@ import {
   DialogTitle,
   DialogContent,
   TextField,
+  styled,
+  tableCellClasses,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -23,6 +25,47 @@ interface Destination {
   id: number;
   name: string;
 }
+
+const StyledTableCell = styled(TableCell)(() => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "#DEDEDE",
+    border: "none",
+    padding: "14px",
+    fontWeight: "bold",
+    fontSize: "16px",
+    "&:first-child": {
+      borderTopLeftRadius: "14px",
+      paddingLeft: "20px",
+      borderBottomLeftRadius: "14px",
+    },
+    "&:last-child": {
+      borderTopRightRadius: "14px",
+      borderBottomRightRadius: "14px",
+    },
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    border: "none",
+    "&:first-child": {
+      borderTopLeftRadius: "14px",
+      paddingLeft: "20px",
+      borderBottomLeftRadius: "14px",
+    },
+    "&:last-child": {
+      borderTopRightRadius: "14px",
+      borderBottomRightRadius: "14px",
+    },
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
 
 export default function AdminTable() {
   const [destinations, setDestinations] = useState<Destination[]>([]);
@@ -104,9 +147,9 @@ export default function AdminTable() {
 
   const removeData = async (id: number) => {
     try {
-
       const confirmed = window.confirm("Are you sure you want to delete this category?");
       if (!confirmed) return;
+      
       const response = await fetch(`${config.apiUrl}/admin/category/${id}`, {
         method: "DELETE",
         headers: {
@@ -175,17 +218,17 @@ export default function AdminTable() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell></TableCell>
+                  <StyledTableCell>ID</StyledTableCell>
+                  <StyledTableCell>Name</StyledTableCell>
+                  <StyledTableCell></StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {destinations.map((destination) => (
-                  <TableRow key={destination.id}>
-                    <TableCell>{destination.id}</TableCell>
-                    <TableCell>{destination.name}</TableCell>
-                    <TableCell align="center" sx={{ margin: "10px" }}>
+                  <StyledTableRow key={destination.id}>
+                    <StyledTableCell>{destination.id}</StyledTableCell>
+                    <StyledTableCell>{destination.name}</StyledTableCell>
+                    <StyledTableCell align="center" sx={{ margin: "10px" }}>
                       <Button
                         onClick={() =>
                           handleEdit(destination.id, destination.name)
@@ -200,8 +243,8 @@ export default function AdminTable() {
                       >
                         <DeleteIcon color="error" />
                       </Button>
-                    </TableCell>
-                  </TableRow>
+                    </StyledTableCell>
+                  </StyledTableRow>
                 ))}
               </TableBody>
             </Table>
@@ -213,9 +256,9 @@ export default function AdminTable() {
             onChange={(e) => setNewDestinationName(e.target.value)}
             label="New Category Name"
           />
-          <Button 
-         
-          onClick={handleCreate}   color="primary">Create</Button>
+          <Button onClick={handleCreate} color="primary">
+            Create
+          </Button>
         </Box>
       </Box>
       <Dialog open={openDialog} onClose={handleCloseDialog}>

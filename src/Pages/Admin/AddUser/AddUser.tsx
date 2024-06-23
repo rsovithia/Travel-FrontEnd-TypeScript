@@ -15,6 +15,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  styled,
+  tableCellClasses,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -27,6 +29,47 @@ interface User {
   phone: string;
   password: string;
 }
+
+const StyledTableCell = styled(TableCell)(() => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: "#DEDEDE",
+    border: "none",
+    padding: "14px",
+    fontWeight: "bold",
+    fontSize: "16px",
+    "&:first-child": {
+      borderTopLeftRadius: "14px",
+      paddingLeft: "20px",
+      borderBottomLeftRadius: "14px",
+    },
+    "&:last-child": {
+      borderTopRightRadius: "14px",
+      borderBottomRightRadius: "14px",
+    },
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+    border: "none",
+    "&:first-child": {
+      borderTopLeftRadius: "14px",
+      paddingLeft: "20px",
+      borderBottomLeftRadius: "14px",
+    },
+    "&:last-child": {
+      borderTopRightRadius: "14px",
+      borderBottomRightRadius: "14px",
+    },
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
 
 export default function AdminTable() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -142,21 +185,21 @@ export default function AdminTable() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Phone Number</TableCell>
-                <TableCell></TableCell>
+                <StyledTableCell>ID</StyledTableCell>
+                <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell>Email</StyledTableCell>
+                <StyledTableCell>Phone Number</StyledTableCell>
+                <StyledTableCell></StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {data.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.email}</TableCell>
-                  <TableCell>{row.phone}</TableCell>
-                  <TableCell align="center">
+                <StyledTableRow key={row.id}>
+                  <StyledTableCell>{row.id}</StyledTableCell>
+                  <StyledTableCell>{row.name}</StyledTableCell>
+                  <StyledTableCell>{row.email}</StyledTableCell>
+                  <StyledTableCell>{row.phone}</StyledTableCell>
+                  <StyledTableCell align="center">
                     <Button
                       sx={{ color: "black" }}
                       onClick={() => handleEditUser(row)}
@@ -166,8 +209,8 @@ export default function AdminTable() {
                     <Button color="error">
                       <DeleteIcon color="error" />
                     </Button>
-                  </TableCell>
-                </TableRow>
+                  </StyledTableCell>
+                </StyledTableRow>
               ))}
             </TableBody>
           </Table>
