@@ -84,6 +84,64 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiDialog-paper": {
+    borderRadius: "15px",
+    padding: theme.spacing(2),
+  },
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+  borderRadius: "20px",
+  padding: theme.spacing(1.5),
+  minWidth: "100px",
+  textTransform: "none",
+}));
+
+const categoryNames: { [key: number]: string } = {
+  1: "Temple",
+  3: "City",
+  7: "Beach",
+  9: "Nature",
+  11: "Lake",
+  13: "Cultural",
+  14: "Resort",
+  15: "Restaurant",
+  16: "Island",
+  17: "Others",
+  18: "Sport",
+};
+
+const provinceNames: { [key: number]: string } = {
+  1: "Banteay Meanchey",
+  2: "Kampong Cham",
+  3: "Tboung Khmum",
+  4: "Battambang",
+  5: "Kampong Chhnang",
+  6: "Kampong Speu",
+  7: "Kampong Thom",
+  8: "Kampot",
+  9: "Kandal",
+  10: "Koh Kong",
+  11: "Kratié",
+  12: "Mondulkiri",
+  13: "Phnom Penh",
+  14: "Preah Vihear",
+  15: "Prey Veng",
+  16: "Pursat",
+  17: "Ratanakiri",
+  18: "Siem Reap",
+  19: "Preah Sihanouk",
+  20: "Stung Treng",
+  21: "Svay Rieng",
+  22: "Takéo",
+  23: "Oddar Meanchey",
+  24: "Kep",
+  25: "Pailin",
+  26: "Tboung Khmum",
+};
+
 export default function DashboardRequest() {
   const [data, setData] = useState<Destination[]>([]);
   const [open, setOpen] = useState<boolean>(false);
@@ -109,7 +167,10 @@ export default function DashboardRequest() {
           console.log("Pending destinations fetched successfully:", result);
           setData(result.data); // Assuming the API returns an object with a "data" property
         } else {
-          console.error("Failed to fetch pending destinations:", response.status);
+          console.error(
+            "Failed to fetch pending destinations:",
+            response.status
+          );
         }
       } catch (error) {
         console.error("Error fetching pending destinations:", error);
@@ -122,12 +183,15 @@ export default function DashboardRequest() {
   const handleApprove = async (id: number) => {
     try {
       console.log(`Approving destination with ID: ${id}...`);
-      const response = await fetch(`${config.apiUrl}/admin/destinations/${id}/approved`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${config.accessToken}`,
-        },
-      });
+      const response = await fetch(
+        `${config.apiUrl}/admin/destinations/${id}/approved`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${config.accessToken}`,
+          },
+        }
+      );
 
       if (response.ok) {
         console.log(`Destination with ID: ${id} approved successfully`);
@@ -145,12 +209,15 @@ export default function DashboardRequest() {
   const handleReject = async (id: number) => {
     try {
       console.log(`Rejecting destination with ID: ${id}...`);
-      const response = await fetch(`${config.apiUrl}/admin/destinations/${id}/rejected`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${config.accessToken}`,
-        },
-      });
+      const response = await fetch(
+        `${config.apiUrl}/admin/destinations/${id}/rejected`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${config.accessToken}`,
+          },
+        }
+      );
 
       if (response.ok) {
         console.log(`Destination with ID: ${id} rejected successfully`);
@@ -188,13 +255,12 @@ export default function DashboardRequest() {
               <StyledTableCell>Name</StyledTableCell>
               <StyledTableCell>Images</StyledTableCell>
               <StyledTableCell>Description</StyledTableCell>
-              <StyledTableCell>Province ID</StyledTableCell>
+              <StyledTableCell>Province</StyledTableCell>
+              <StyledTableCell>Category</StyledTableCell>
               <StyledTableCell>Latitude</StyledTableCell>
               <StyledTableCell>Longitude</StyledTableCell>
               <StyledTableCell>Created At</StyledTableCell>
               <StyledTableCell>Updated At</StyledTableCell>
-              <StyledTableCell>Category ID</StyledTableCell>
-              <StyledTableCell>User ID</StyledTableCell>
               <StyledTableCell>Status</StyledTableCell>
             </TableRow>
           </TableHead>
@@ -236,8 +302,17 @@ export default function DashboardRequest() {
                     }}
                   />
                 </StyledTableCell>
-                <StyledTableCell>{truncate(destination.description, 40)}</StyledTableCell>
-                <StyledTableCell>{destination.province_id}</StyledTableCell>
+                <StyledTableCell>
+                  {truncate(destination.description, 40)}
+                </StyledTableCell>
+                <StyledTableCell>
+                  {provinceNames[destination.province_id] ||
+                    destination.province_id}
+                </StyledTableCell>
+                <StyledTableCell>
+                  {categoryNames[destination.category_id] ||
+                    destination.category_id}
+                </StyledTableCell>
                 <StyledTableCell>{destination.lat}</StyledTableCell>
                 <StyledTableCell>{destination.long}</StyledTableCell>
                 <StyledTableCell>
@@ -246,14 +321,14 @@ export default function DashboardRequest() {
                 <StyledTableCell>
                   {new Date(destination.updated_at).toLocaleDateString()}
                 </StyledTableCell>
-                <StyledTableCell>{destination.category_id}</StyledTableCell>
-                <StyledTableCell>{destination.user_id}</StyledTableCell>
                 <StyledTableCell>
                   <Box
                     sx={{
                       bgcolor: "red",
+                      color: "white",
                       padding: "6px",
                       borderRadius: "14px",
+                      textAlign: "center",
                     }}
                   >
                     {destination.status}
@@ -265,88 +340,99 @@ export default function DashboardRequest() {
         </Table>
       </TableContainer>
 
-      <Dialog open={open} onClose={handleClose}>
+      <StyledDialog open={open} onClose={handleClose}>
         <DialogTitle>Destination Details</DialogTitle>
         <DialogContent>
           {selectedDestination && (
             <>
               <DialogContentText>
-                ID: {selectedDestination.id}
+                <strong>ID:</strong> {selectedDestination.id}
               </DialogContentText>
               <DialogContentText>
-                Name: {selectedDestination.name}
+                <strong>Name:</strong> {selectedDestination.name}
               </DialogContentText>
               <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
                 <img
                   src={fileUrl + selectedDestination.image1}
                   alt={`${selectedDestination.name} image1`}
-                  style={{ width: "50px", height: "50px" }}
+                  style={{ width: "50px", height: "50px", borderRadius: "5px" }}
                 />
                 <img
                   src={fileUrl + selectedDestination.image2}
                   alt={`${selectedDestination.name} image2`}
-                  style={{ width: "50px" }}
+                  style={{ width: "50px", borderRadius: "5px" }}
                 />
                 <img
                   src={fileUrl + selectedDestination.image3}
                   alt={`${selectedDestination.name} image3`}
-                  style={{ width: "50px" }}
+                  style={{ width: "50px", borderRadius: "5px" }}
                 />
               </Box>
               <DialogContentText>
-                Description: {truncate(selectedDestination.description, 50)}
+                <strong>Description:</strong>{" "}
+                {truncate(selectedDestination.description, 50)}
               </DialogContentText>
               <DialogContentText>
-                Province ID: {selectedDestination.province_id}
+                <strong>Province:</strong>{" "}
+                {provinceNames[selectedDestination.province_id] ||
+                  selectedDestination.province_id}
               </DialogContentText>
               <DialogContentText>
-                Latitude: {selectedDestination.lat}
+                <strong>Latitude:</strong> {selectedDestination.lat}
               </DialogContentText>
               <DialogContentText>
-                Longitude: {selectedDestination.long}
+                <strong>Longitude:</strong> {selectedDestination.long}
               </DialogContentText>
               <DialogContentText>
-                Created At:{" "}
+                <strong>Created At:</strong>{" "}
                 {new Date(selectedDestination.created_at).toLocaleDateString()}
               </DialogContentText>
               <DialogContentText>
-                Updated At:{" "}
+                <strong>Updated At:</strong>{" "}
                 {new Date(selectedDestination.updated_at).toLocaleDateString()}
               </DialogContentText>
               <DialogContentText>
-                Category ID: {selectedDestination.category_id}
+                <strong>Category:</strong>{" "}
+                {categoryNames[selectedDestination.category_id] ||
+                  selectedDestination.category_id}
               </DialogContentText>
               <DialogContentText>
-                User ID: {selectedDestination.user_id}
+                <strong>User ID:</strong> {selectedDestination.user_id}
               </DialogContentText>
               <DialogContentText>
-                Status: {selectedDestination.status}
+                <strong>Status:</strong> {selectedDestination.status}
               </DialogContentText>
             </>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <StyledButton
+            onClick={handleClose}
+            color="primary"
+            variant="outlined"
+          >
             Close
-          </Button>
+          </StyledButton>
           {selectedDestination && (
             <>
-              <Button
+              <StyledButton
                 onClick={() => handleApprove(selectedDestination.id)}
                 color="primary"
+                variant="contained"
               >
                 Approve
-              </Button>
-              <Button
+              </StyledButton>
+              <StyledButton
                 onClick={() => handleReject(selectedDestination.id)}
                 color="secondary"
+                variant="contained"
               >
                 Reject
-              </Button>
+              </StyledButton>
             </>
           )}
         </DialogActions>
-      </Dialog>
+      </StyledDialog>
     </Box>
   );
 }

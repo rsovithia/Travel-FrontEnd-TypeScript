@@ -9,15 +9,18 @@ import {
   CardContent,
 } from "@mui/material";
 import config from "../../Api/config";
-
+import { Link } from "react-router-dom";
 interface Destination {
+  id: number;
   image1: string;
   name: string;
   description: string;
 }
 
 interface Recommendation {
+  destination_id: number;
   destination: Destination;
+  total_view: number;
 }
 
 const fetchtopview = async (): Promise<Recommendation[]> => {
@@ -37,7 +40,7 @@ const fetchtopview = async (): Promise<Recommendation[]> => {
     console.log("API Response:", data); // Log the API response to the console
     return data.data; // Return the data from the response
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    console.error("Error fetching top views:", error);
     return [];
   }
 };
@@ -60,11 +63,7 @@ export default function Home() {
 
   return (
     <>
-      <Box
-        sx={{
-          bgcolor: "black",
-        }}
-      >
+      <Box sx={{ bgcolor: "black" }}>
         <Box
           sx={{
             display: "flex",
@@ -81,29 +80,24 @@ export default function Home() {
             color={"white"}
             component="div"
           >
-            The Most Views Destination
+            The Most Viewed Destinations
           </Typography>
-          <Typography
-          
-            gutterBottom
-            variant="h6"
-            color={"white"}
-         
-          >
-          Here is the most Destination get the views in website
+          <Typography gutterBottom variant="h6" color={"white"}>
+            The destinations with the highest number of views on the website,
+            attracting a significant amount of interest from visitors.
           </Typography>
         </Box>
         <Box
           sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
         >
           <Grid container spacing={6} justifyContent="center">
-            {recommendationsData.map((recommendation, index) => {
+            {recommendationsData.map((recommendation) => {
               if (!recommendation || !recommendation.destination) return null;
 
-              const { image1, name } = recommendation.destination;
+              const { id, image1, name } = recommendation.destination;
 
               return (
-                <Grid item key={index}>
+                <Grid item key={id}>
                   <Card
                     sx={{
                       maxWidth: "300px",
@@ -112,20 +106,30 @@ export default function Home() {
                     }}
                   >
                     <CardActionArea>
-                      {image1 && (
-                        <CardMedia
-                          sx={{ width: "100%" }}
-                          component="img"
-                          height="200"
-                          image={`${fileUrl}${image1}`}
-                          alt={`Recommendation ${index}`}
-                        />
-                      )}
-                      <CardContent sx={{ backgroundColor: "transparent" }}>
-                        <Typography sx={{ color:"white"}} gutterBottom variant="h5" component="div">
-                          {name}
-                        </Typography>
-                      </CardContent>
+                      <Link
+                        to={`/destination/${id}`}
+                        style={{ textDecoration: "none" }}
+                      >
+                        {image1 && (
+                          <CardMedia
+                            sx={{ width: "100%" }}
+                            component="img"
+                            height="200"
+                            image={`${fileUrl}${image1}`}
+                            alt={`Recommendation ${id}`}
+                          />
+                        )}
+                        <CardContent sx={{ backgroundColor: "transparent" }}>
+                          <Typography
+                            sx={{ color: "white" }}
+                            gutterBottom
+                            variant="h5"
+                            component="div"
+                          >
+                            {name}
+                          </Typography>
+                        </CardContent>
+                      </Link>
                     </CardActionArea>
                   </Card>
                 </Grid>

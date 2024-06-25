@@ -100,7 +100,7 @@ const Destinations: React.FC = () => {
     try {
       const query = new URLSearchParams(searchParams).toString();
       console.log("Fetching categories with params:", query);
-      const response = await fetch(`${config.apiUrl}/auth/category`, {
+      const response = await fetch(`${config.apiUrl}/category`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${config.accessToken}`,

@@ -46,8 +46,8 @@ const Login: React.FC = () => {
             src={Logo}
             alt="Logo"
           /> */}
-          <h1 className="welcome">ADMIN PANEL</h1>
-          <p className="detail">Control Panel Login</p>
+          <h1 className="welcome">Login</h1>
+          <p className="detail">Welcome to Smart Voyage </p>
         </div>
 
         <form onSubmit={handleSubmit}>

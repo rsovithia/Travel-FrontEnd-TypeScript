@@ -74,6 +74,7 @@ interface Destination {
     description: string;
   }[];
 }
+
 interface CommentUser {
   id: number;
   name: string;
@@ -107,7 +108,7 @@ const DestinationDetails: React.FC = () => {
   const { authenticated, user } = useAuth() as AuthContextType;
   const [destination, setDestination] = useState<Destination | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [rating, setRating] = useState<number | null>(null);
+  const [rating, setRating] = useState<number>(0);
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [alreadyRated, setAlreadyRated] = useState<boolean>(false);
   const [favoriteId, setFavoriteId] = useState<number | null>(null);
@@ -126,68 +127,61 @@ const DestinationDetails: React.FC = () => {
 
   const email = "Vithiasokh22@gmail.com"; // Fixed email for local storage check
 
-  useEffect(() => {
-    const getData = async () => {
-      if (!id) {
-        setLoading(false);
-        return;
-      }
+  const getData = async () => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const response = await fetch(`${config.apiUrl}/destination/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${config.accessToken}`,
-          },
-        });
-        const result = await response.json();
-        console.log("Destination data:", result); // Log API response
-        setDestination(result.data);
-        setLoading(false);
+    try {
+      const response = await fetch(`${config.apiUrl}/destination/${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${config.accessToken}`,
+        },
+      });
+      const result = await response.json();
+      console.log("Destination data:", result); // Log API response
+      setDestination(result.data);
+      setLoading(false);
 
-        // Set rating from API response
-        const ratings = result.data.ratings;
-        if (ratings && ratings.length > 0) {
-          const userRating = ratings.find(
-            (r: { user_id: number }) => user && r.user_id === user.id
-          );
-          if (userRating) {
-            setRating(userRating.rating);
-            setAlreadyRated(true);
-          } else {
-            const averageRating =
-              ratings.reduce(
-                (acc: number, r: { rating: number }) => acc + r.rating,
-                0
-              ) / ratings.length;
-            setRating(averageRating);
-          }
-        }
-
-        // Check local storage for the rating status
-        const hasRated = localStorage.getItem(`rated_${email}_${id}`);
-        if (hasRated) {
+      // Set rating from API response
+      const ratings = result.data.ratings;
+      if (ratings && ratings.length > 0) {
+        const userRating = ratings.find(
+          (r: { user_id: number }) => user && r.user_id === user.id
+        );
+        if (userRating) {
+          setRating(userRating.rating);
           setAlreadyRated(true);
         }
-
-        if (authenticated) {
-          getCheckTheFavorit(result.data.id);
-          fetchLikedGoods();
-        }
-
-        // Set comments from API response
-        const submittedComments = result.data.ratings.map((r: any) => ({
-          rating: r.rating,
-          comments: r.comments,
-          user: r.user,
-        }));
-        setSubmittedComments(submittedComments);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
       }
-    };
 
+      // Check local storage for the rating status
+      const hasRated = localStorage.getItem(`rated_${email}_${id}`);
+      if (hasRated) {
+        setAlreadyRated(true);
+      }
+
+      if (authenticated) {
+        getCheckTheFavorit(result.data.id);
+        fetchLikedGoods();
+      }
+
+      // Set comments from API response
+      const submittedComments = result.data.ratings.map((r: any) => ({
+        rating: r.rating,
+        comments: r.comments,
+        user: r.user,
+      }));
+      setSubmittedComments(submittedComments);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     getData();
   }, [id, authenticated, user]);
 
@@ -322,7 +316,7 @@ const DestinationDetails: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         console.log("Submit rating response:", result); // Log API response
-        setRating(tempRating);
+        setRating(tempRating!);
         setAlreadyRated(true);
         setSubmittedComments([
           ...submittedComments,
@@ -332,6 +326,9 @@ const DestinationDetails: React.FC = () => {
 
         // Save rating status to local storage
         localStorage.setItem(`rated_${email}_${id}`, "true");
+
+        // Refresh the data after submission
+        getData();
       } else {
         console.error("Error submitting rating");
       }
@@ -376,7 +373,7 @@ const DestinationDetails: React.FC = () => {
       if (response.ok) {
         const result = await response.json();
         console.log("Submit comment response:", result); // Log API response
-        setRating(tempRating);
+        setRating(tempRating!);
         setAlreadyRated(true);
         setSubmittedComments([
           ...submittedComments,
@@ -386,6 +383,9 @@ const DestinationDetails: React.FC = () => {
 
         // Save rating status to local storage
         localStorage.setItem(`rated_${email}_${id}`, "true");
+
+        // Refresh the data after submission
+        getData();
       } else {
         console.error("Error submitting comment");
       }
@@ -611,7 +611,7 @@ const DestinationDetails: React.FC = () => {
                     <Swiper
                       style={{
                         width: "100%",
-                        height: "300px", // Adjust height as needed
+                        height: "500px", // Adjust height as needed
                       }}
                       loop={true}
                       spaceBetween={10}
@@ -648,7 +648,7 @@ const DestinationDetails: React.FC = () => {
 
                 <Box mt={4}>
                   <Typography variant="h6" gutterBottom>
-                    Related Destinations
+                    Other Destinations
                   </Typography>
                   <Swiper
                     style={{
@@ -737,16 +737,22 @@ const DestinationDetails: React.FC = () => {
                   key={index}
                   mb={2}
                 >
-                  <Box display="flex" alignItems="center" mb={1}>
-                    <Avatar
-                      alt={submittedComment.user.name}
-                      src={fileUrl + submittedComment.user.avatar}
-                      sx={{ marginRight: 1, width: 30, height: 30 }}
-                    />
-                    <Typography variant="body1">
-                      {submittedComment.user.name}
-                    </Typography>
-                  </Box>
+                  {submittedComment.user && (
+                    <Box display="flex" alignItems="center" mb={1}>
+                      <Avatar
+                        alt={submittedComment.user.name}
+                        src={
+                          submittedComment.user.avatar
+                            ? fileUrl + submittedComment.user.avatar
+                            : ""
+                        }
+                        sx={{ marginRight: 1, width: 30, height: 30 }}
+                      />
+                      <Typography variant="body1">
+                        {submittedComment.user.name}
+                      </Typography>
+                    </Box>
+                  )}
                   <Typography variant="body2">
                     {submittedComment.comments}
                   </Typography>

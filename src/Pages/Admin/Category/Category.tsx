@@ -147,9 +147,11 @@ export default function AdminTable() {
 
   const removeData = async (id: number) => {
     try {
-      const confirmed = window.confirm("Are you sure you want to delete this category?");
+      const confirmed = window.confirm(
+        "Are you sure you want to delete this category?"
+      );
       if (!confirmed) return;
-      
+
       const response = await fetch(`${config.apiUrl}/admin/category/${id}`, {
         method: "DELETE",
         headers: {
@@ -213,7 +215,7 @@ export default function AdminTable() {
           justifyContent: "space-between",
         }}
       >
-        <Box sx={{ flex: "10%", bgcolor: "white", padding: "25px" }}>
+        <Box sx={{ flex: "10%", bgcolor: "white", padding: "0  25px 0 0" }}>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>

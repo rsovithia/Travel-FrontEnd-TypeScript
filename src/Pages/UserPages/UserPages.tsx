@@ -467,6 +467,7 @@ const Navbar: React.FC = () => {
                         justifyContent: "space-between",
                         alignItems: "center",
                         width: "100%",
+                  paddingBottom:"20px",
                       }}
                     >
                       <Typography
@@ -555,6 +556,13 @@ const Navbar: React.FC = () => {
                       variant="body2"
                       color="textSecondary"
                       component="p"
+                      sx={{
+                        display: "-webkit-box",
+                        WebkitBoxOrient: "vertical",
+                        WebkitLineClamp: 2,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
                     >
                       Description: {item.id}
                     </Typography>

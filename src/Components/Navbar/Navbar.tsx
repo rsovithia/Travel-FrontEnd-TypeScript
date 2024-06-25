@@ -15,12 +15,12 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
   Input,
   Select,
   FormControl,
+  DialogContentText,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
@@ -29,7 +29,6 @@ import { Link } from "react-router-dom";
 import "./Navbar.css";
 import config from "../../Api/config";
 import Logo from "../../assets/logo.svg";
-
 import { logout } from "../../Auth/auth";
 
 interface User {
@@ -95,6 +94,11 @@ const Navbar: React.FC = () => {
     null,
     null,
   ]);
+
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const placesServiceRef = useRef<google.maps.places.PlacesService | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const handleResize = () => setIsSmallScreen(window.innerWidth < 700);
@@ -298,6 +302,74 @@ const Navbar: React.FC = () => {
       }));
       marker.setPosition(event.latLng!);
     });
+
+    placesServiceRef.current = new google.maps.places.PlacesService(map);
+
+    if (inputRef.current) {
+      autocompleteRef.current = new google.maps.places.Autocomplete(
+        inputRef.current,
+        { types: ["geocode"] }
+      );
+
+      autocompleteRef.current.addListener("place_changed", () => {
+        const place = autocompleteRef.current?.getPlace();
+        if (place?.geometry) {
+          const lat = place.geometry.location?.lat().toString() || "";
+          const lng = place.geometry.location?.lng().toString() || "";
+          setNewDestination((prevDestination) => ({
+            ...prevDestination,
+            lat,
+            long: lng,
+          }));
+          marker.setPosition(place.geometry.location!);
+          map.setCenter(place.geometry.location!);
+          map.setZoom(15);
+        }
+      });
+    }
+  };
+
+  const handleSearch = () => {
+    const query = searchInputRef.current?.value;
+    if (query && placesServiceRef.current) {
+      placesServiceRef.current.textSearch({ query }, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+          const place = results[0];
+          if (place.geometry) {
+            const lat = place.geometry.location?.lat().toString() || "";
+            const lng = place.geometry.location?.lng().toString() || "";
+            setNewDestination((prevDestination) => ({
+              ...prevDestination,
+              lat,
+              long: lng,
+            }));
+            const map = new google.maps.Map(
+              document.getElementById("map") as HTMLElement,
+              {
+                center: { lat: parseFloat(lat), lng: parseFloat(lng) },
+                zoom: 15,
+              }
+            );
+            const marker = new google.maps.Marker({
+              position: { lat: parseFloat(lat), lng: parseFloat(lng) },
+              map,
+              draggable: true,
+            });
+            marker.setPosition(place.geometry.location!);
+            map.setCenter(place.geometry.location!);
+            marker.addListener("dragend", (event: google.maps.MapMouseEvent) => {
+              const newLat = event.latLng?.lat().toString() || "";
+              const newLng = event.latLng?.lng().toString() || "";
+              setNewDestination((prevDestination) => ({
+                ...prevDestination,
+                lat: newLat,
+                long: newLng,
+              }));
+            });
+          }
+        }
+      });
+    }
   };
 
   useEffect(() => {
@@ -758,6 +830,7 @@ const Navbar: React.FC = () => {
                   fullWidth
                   value={newDestination.lat}
                   onChange={handleChange}
+                  inputRef={inputRef}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -771,6 +844,20 @@ const Navbar: React.FC = () => {
                   value={newDestination.long}
                   onChange={handleChange}
                 />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  margin="dense"
+                  id="search"
+                  name="search"
+                  label="Search Location"
+                  type="text"
+                  fullWidth
+                  inputRef={searchInputRef}
+                />
+                <Button onClick={handleSearch} variant="contained" color="primary">
+                  Search
+                </Button>
               </Grid>
               <Grid item xs={12}>
                 <Box

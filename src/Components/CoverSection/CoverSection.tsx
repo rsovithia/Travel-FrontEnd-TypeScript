@@ -116,18 +116,18 @@ const CoverSection: React.FC = () => {
             <Typography
               marginBottom={0}
               color={"white"}
-              variant="h2"
+              variant="h3"
               gutterBottom
               display="flex"
               alignItems="center"
               justifyContent="left"
             >
-              Top 5 Destinations
+              Top 5 Rating Destinations
             </Typography>
             <Typography
               marginBottom={0}
               color={"white"}
-              variant="h2"
+              variant="h3"
               gutterBottom
               display="flex"
               alignItems="center"
